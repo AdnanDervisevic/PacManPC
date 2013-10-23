@@ -141,7 +141,7 @@ namespace PacManLib
                 PlayerMovement(elapsedGameTime);
 
             if (this.blueGhost.Alive)
-                GhostMovement(elapsedGameTime);
+                BlueGhostMovement(elapsedGameTime);
 
             PlayerGhostHitbox();
         }
@@ -153,7 +153,7 @@ namespace PacManLib
         public void Draw(TimeSpan elapsedGameTime)
         {
             // Clear the screen to black and draw the map and player.
-            this.gameManager.SpriteBatch.GraphicsDevice.Clear(Color.Black);
+            this.gameManager.SpriteBatch.GraphicsDevice.Clear(new Color(68, 68, 68));
             this.tileMap.Draw(elapsedGameTime);
             this.player.Draw(elapsedGameTime);
             this.blueGhost.Draw(elapsedGameTime);
@@ -171,7 +171,11 @@ namespace PacManLib
 
         #region Private Helpers
 
-        private void GhostMovement(TimeSpan elapsedGameTime)
+        /// <summary>
+        /// Method for handling the blue ghosts movement, temporary method.
+        /// </summary>
+        /// <param name="elapsedGameTime"></param>
+        private void BlueGhostMovement(TimeSpan elapsedGameTime)
         {
             Direction direction = this.blueGhost.Direction;
             Vector2 motion = this.blueGhost.Motion;
@@ -195,6 +199,15 @@ namespace PacManLib
                      * GHOST ERROR! LOLOLOL Direction och blueGhost.Direction kommer ALLTID vara samma så om denna är false kmr nästa IF-sats också vara false.
                      * direction måste sättas till det hållet som spöket försöker svänga åt nästa gång han kommer till en Turn path.
                      * 
+                     * EVENTUELLT går det att fixa så att en  funktion körs så fort en spöke har en möjlighet att svänga, i denna funktionen kan du sedan beräkna åt vilket håll spöket ska röra sig mot
+                     * kanske sparar prestanda? 
+                     * 
+                     * Så det finns två sätt: Bestäm åt vilket håll spöket ska svänga åt här med hjälp av
+                     * CanCharacterMove(ghostCoords, "DET HÅLL DU VILL TESTA MOT", out motion) - Detta ger false om du inte kan flytta och om du kan flytta ger den true och motion sätts till 
+                     * det värde som spöket ska röra sig i.
+                     * 
+                     * Det andra sättet är att en funktion körs så fort ett av spökena går på en turn platta, som inparameter till funktionen finns vilket spöke som kan svänga.
+                     * Här kan du nu räkna ut om spöket ska svänga eller inte.
                      * 
                      * 
                      * */
