@@ -32,6 +32,8 @@ namespace PacManLib
         public const int CharacterWidth = 28;
         public const int CharacterHeight = 28;
 
+        public const int GhostScore = 200;
+
         #endregion
 
         #region Fields
@@ -103,6 +105,18 @@ namespace PacManLib
 
             this.blueGhost = new Ghost(this.gameManager, new Vector2(560, 40),
                 this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+
+            this.greenGhost = new Ghost(this.gameManager, new Vector2(560, 40),
+                this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+            this.greenGhost.Alive = false;
+
+            this.yellowGhost = new Ghost(this.gameManager, new Vector2(560, 40),
+                this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+            this.yellowGhost.Alive = false;
+
+            this.purpleGhost = new Ghost(this.gameManager, new Vector2(560, 40),
+                this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+            this.purpleGhost.Alive = false;
         }
 
         #endregion
@@ -118,7 +132,18 @@ namespace PacManLib
             // Updates the player and movement.
             this.player.Update(elapsedGameTime);
             this.blueGhost.Update(elapsedGameTime);
-            Movement(elapsedGameTime);
+            this.greenGhost.Update(elapsedGameTime);
+            this.yellowGhost.Update(elapsedGameTime);
+            this.purpleGhost.Update(elapsedGameTime);
+            
+            // If the player is alive then handle the movement.
+            if (this.player.Alive)
+                PlayerMovement(elapsedGameTime);
+
+            if (this.blueGhost.Alive)
+                GhostMovement(elapsedGameTime);
+
+            PlayerGhostHitbox();
         }
         
         /// <summary>
@@ -146,19 +171,98 @@ namespace PacManLib
 
         #region Private Helpers
 
+        private void GhostMovement(TimeSpan elapsedGameTime)
+        {
+            Direction direction = this.blueGhost.Direction;
+            Vector2 motion = this.blueGhost.Motion;
+
+            // Converts the center of the ghost to the ghost's tile coordinates.
+            Point ghostCoords = PacManSX.ConvertPositionToCell(this.blueGhost.Center);
+            Tile ghostTile = tileMap.GetTile(ghostCoords); // Get the tile the ghost is located at.
+
+            // Check if the tile is a turn or path tile.
+            if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Path)
+            {
+                // Convert the cell to a position.
+                Vector2 ghostTilePosition = PacManSX.ConvertCellToPosition(ghostCoords);
+
+                // Check if the ghost is right ontop of the tile.
+                if (ghostTilePosition == this.blueGhost.Position - new Vector2(0, PacManSX.TitleHeight))
+                {
+                    // Check if the ghost can move in that direction
+                    /*
+                     * 
+                     * GHOST ERROR! LOLOLOL Direction och blueGhost.Direction kommer ALLTID vara samma så om denna är false kmr nästa IF-sats också vara false.
+                     * direction måste sättas till det hållet som spöket försöker svänga åt nästa gång han kommer till en Turn path.
+                     * 
+                     * 
+                     * 
+                     * */
+                    direction = Direction.Down; // For test purpose: The ghost should turn down on next turn tile if possible, otherwise stand still or continue in the old direction.
+
+                    if (CanCharacterMove(ghostCoords, direction, out motion))
+                    {
+                        this.blueGhost.Motion = motion;
+                        this.blueGhost.Direction = direction;
+                    }
+                    else
+                    {
+                        // If the ghost can't move in that direction then check if the player can move in the old direction.
+                        if (CanCharacterMove(ghostCoords, this.blueGhost.Direction, out motion))
+                        {
+                            this.blueGhost.Motion = motion;
+                        }
+                    }
+                    // If the ghost can't move in the old direction or the new then just stand still.
+                }
+                else
+                {
+                    // If the ghost is not right ontop of the tile then continue to move.
+                    if (this.blueGhost.Direction == Direction.Up)
+                        motion.Y = -1;
+                    else if (this.blueGhost.Direction == Direction.Down)
+                        motion.Y = 1;
+                    else if (this.blueGhost.Direction == Direction.Left)
+                        motion.X = -1;
+                    else if (this.blueGhost.Direction == Direction.Right)
+                        motion.X = 1;
+                }
+            }
+
+            // Check if we should move.
+            if (motion != Vector2.Zero)
+            {
+                // Normalize the motion vector and move the ghost.
+                motion.Normalize();
+
+                this.blueGhost.Position.X += (float)Math.Round((motion * this.blueGhost.Speed * (float)elapsedGameTime.TotalSeconds).X);
+                this.blueGhost.Position.Y += (float)Math.Round((motion * this.blueGhost.Speed * (float)elapsedGameTime.TotalSeconds).Y);
+            }
+        }
+
         /// <summary>
         /// Method for handling movement and input.
         /// </summary>
-        private void Movement(TimeSpan elapsedGameTime)
+        private void PlayerMovement(TimeSpan elapsedGameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
 
             Direction direction = this.player.NextDirection;
             Vector2 motion = this.player.Motion;
 
-            // Converts the center of the player to a cell, to get the cell the player is most in.
+            // Converts the center of the player to the players tile coordinates.
             Point playerCoords = PacManSX.ConvertPositionToCell(this.player.Center);
             Tile playerTile = tileMap.GetTile(playerCoords); // Get the tile the player is located at.
+
+            // Check for input, should we change direction?
+            if (keyboardState.IsKeyDown(Keys.W))
+                direction = Direction.Up;
+            else if (keyboardState.IsKeyDown(Keys.S))
+                direction = Direction.Down;
+            else if (keyboardState.IsKeyDown(Keys.A))
+                direction = Direction.Left;
+            else if (keyboardState.IsKeyDown(Keys.D))
+                direction = Direction.Right;
             
             // Check if the tile is a turn or path tile.
             if (playerTile.TileContent == TileContent.Turn || playerTile.TileContent == TileContent.Path)
@@ -169,16 +273,6 @@ namespace PacManLib
                 // Check if the player is right ontop of the tile.
                 if (playerTilePosition == this.player.Position - new Vector2(0, PacManSX.TitleHeight))
                 {
-                    // Check for input, should we change direction?
-                    if (keyboardState.IsKeyDown(Keys.W))
-                        direction = Direction.Up;
-                    else if (keyboardState.IsKeyDown(Keys.S))
-                        direction = Direction.Down;
-                    else if (keyboardState.IsKeyDown(Keys.A))
-                        direction = Direction.Left;
-                    else if (keyboardState.IsKeyDown(Keys.D))
-                        direction = Direction.Right;
-
                     // Check if the player can move in that direction
                     if (CanCharacterMove(playerCoords, direction, out motion))
                     {
@@ -201,13 +295,52 @@ namespace PacManLib
                 {
                     // If the player is not right ontop of the tile then continue to move.
                     if (this.player.Direction == Direction.Up)
-                        motion.Y--;
+                    {
+                        // Did we change direction to the opposite direction, then move in the opposite direction.
+                        if (direction == Direction.Down)
+                        {
+                            motion.Y = 1;
+                            this.player.Direction = direction;
+                        }
+                        else
+                            motion.Y = -1;
+                    }
                     else if (this.player.Direction == Direction.Down)
-                        motion.Y++;
+                    {
+                        // Did we change direction to the opposite direction, then move in the opposite direction.
+                        if (direction == Direction.Up)
+                        {
+                            motion.Y = -1;
+                            this.player.Direction = direction;
+                        }
+                        else
+                            motion.Y = 1;
+                    }
                     else if (this.player.Direction == Direction.Left)
-                        motion.X--;
+                    {
+                        // Did we change direction to the opposite direction, then move in the opposite direction.
+                        if (direction == Direction.Right)
+                        {
+                            motion.X = 1;
+                            this.player.Direction = direction;
+                        }
+                        else
+                            motion.X = -1;
+                    }
                     else if (this.player.Direction == Direction.Right)
-                        motion.X++;
+                    {
+                        // Did we change direction to the opposite direction, then move in the opposite direction.
+                        if (direction == Direction.Left)
+                        {
+                            motion.X = -1;
+                            this.player.Direction = direction;
+                        }
+                        else
+                            motion.X = 1;
+                    }
+
+                    // Update next direction.
+                    this.player.NextDirection = direction;
                 }
             }
 
@@ -217,8 +350,8 @@ namespace PacManLib
                 // Normalize the motion vector and move the player.
                 motion.Normalize();
 
-                this.player.Position.X += (float)Math.Round((motion * 300 * (float)elapsedGameTime.TotalSeconds).X);
-                this.player.Position.Y += (float)Math.Round((motion * 300 * (float)elapsedGameTime.TotalSeconds).Y);
+                this.player.Position.X += (float)Math.Round((motion * this.player.Speed * (float)elapsedGameTime.TotalSeconds).X);
+                this.player.Position.Y += (float)Math.Round((motion * this.player.Speed * (float)elapsedGameTime.TotalSeconds).Y);
             }
         }
 
@@ -276,6 +409,54 @@ namespace PacManLib
             // else set motion to (0, 0) and return false.
             motion = Vector2.Zero;
             return false;
+        }
+
+        /// <summary>
+        /// Method handling the collision detection between the player and a ghost.
+        /// </summary>
+        private void PlayerGhostHitbox()
+        {
+            if (!this.player.Alive)
+                return;
+
+            // Check if the player is in god mode.
+            if (this.player.GodMode)
+            {
+                // If he is in godmode then he should be able to eat the ghost.
+                // If the player and a ghost collides, kill the ghost and recieve score.
+                if (this.blueGhost.Alive && this.blueGhost.Bounds.Intersects(this.player.Bounds))
+                {
+                    this.blueGhost.Alive = false;
+                    this.score += PacManSX.GhostScore;
+                }
+                else if (this.greenGhost.Alive && this.greenGhost.Bounds.Intersects(this.player.Bounds))
+                {
+                    this.greenGhost.Alive = false;
+                    this.score += PacManSX.GhostScore;
+                }
+                else if (this.yellowGhost.Alive && this.yellowGhost.Bounds.Intersects(this.player.Bounds))
+                {
+                    this.yellowGhost.Alive = false;
+                    this.score += PacManSX.GhostScore;
+                }
+                else if (this.purpleGhost.Alive && this.purpleGhost.Bounds.Intersects(this.player.Bounds))
+                {
+                    this.purpleGhost.Alive = false;
+                    this.score += PacManSX.GhostScore;
+                }
+            }
+            else
+            {
+                // If the player and a ghost collides, remove a life from the player and kill it.
+                if (this.blueGhost.Alive && this.blueGhost.Bounds.Intersects(this.player.Bounds) ||
+                    this.greenGhost.Alive && this.greenGhost.Bounds.Intersects(this.player.Bounds) ||
+                    this.yellowGhost.Alive && this.yellowGhost.Bounds.Intersects(this.player.Bounds) ||
+                    this.purpleGhost.Alive && this.purpleGhost.Bounds.Intersects(this.player.Bounds))
+                {
+                    this.lives--;
+                    this.player.Alive = false;
+                }
+            }
         }
 
         #endregion

@@ -30,17 +30,27 @@ namespace PacManLib.GameObjects
         #region Properties
 
         /// <summary>
-        /// Gets or sets the motion of the player.
+        /// Determines if the character should be drawn.
+        /// </summary>
+        public bool Alive { get; set; }
+
+        /// <summary>
+        /// Gets or sets the speed of the character.
+        /// </summary>
+        public float Speed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the motion of the character.
         /// </summary>
         public Vector2 Motion { get; set; }
 
         /// <summary>
-        /// Gets or sets the direction the player is moving towards.
+        /// Gets or sets the direction the character is moving towards.
         /// </summary>
         public Direction Direction { get; set; }
 
         /// <summary>
-        /// Gets the center of the player.
+        /// Gets the center of the character.
         /// </summary>
         public Vector2 Center
         {
@@ -48,7 +58,7 @@ namespace PacManLib.GameObjects
         }
 
         /// <summary>
-        /// Gets the bounds of the player.
+        /// Gets the bounds of the character.
         /// </summary>
         public Rectangle Bounds
         {
@@ -66,15 +76,16 @@ namespace PacManLib.GameObjects
         #region Constructors
 
         /// <summary>
-        /// Constructs a new player.
+        /// Constructs a new character.
         /// </summary>
         /// <param name="gameManager">The game manager.</param>
-        /// <param name="origin">The origin of the player.</param>
-        /// <param name="texture">The players spritesheet.</param>
+        /// <param name="origin">The origin of the character.</param>
+        /// <param name="texture">The character spritesheet.</param>
         /// <param name="frameWidth">The width of a single frame.</param>
         /// <param name="frameHeight">The height of a single frame.</param>
         public Character(GameManager gameManager, Vector2 position, Texture2D texture, int frameWidth, int frameHeight)
         {
+            this.Alive = true;
             this.gameManager = gameManager;
             this.Position = position;
             this.origin = new Vector2(frameWidth / 2, frameHeight / 2);
@@ -91,7 +102,8 @@ namespace PacManLib.GameObjects
         /// <param name="elapsedGameTime">Elapsed time since the last update.</param>
         public void Update(TimeSpan elapsedGameTime)
         {
-            this.animation.Update(elapsedGameTime);
+            if (this.Alive)
+                this.animation.Update(elapsedGameTime);
         }
 
         /// <summary>
@@ -100,6 +112,9 @@ namespace PacManLib.GameObjects
         /// <param name="elapsedGameTime">Elapsed time since the last draw.</param>
         public void Draw(TimeSpan elapsedGameTime)
         {
+            if (!this.Alive)
+                return;
+
             this.gameManager.SpriteBatch.Begin();
 
             if (this.Direction == Direction.Up)

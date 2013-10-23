@@ -29,6 +29,7 @@ namespace PacManLib.GameObjects
         public Ghost(GameManager gameManager, Vector2 position, Texture2D texture, int frameWidth, int frameHeight)
             : base(gameManager, position, texture, frameWidth, frameHeight)
         {
+            this.Speed = 140;
         }
 
         #endregion

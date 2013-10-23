@@ -23,6 +23,11 @@ namespace PacManLib.GameObjects
         /// </summary>
         public Direction NextDirection { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether the player is in god mode.
+        /// </summary>
+        public bool GodMode { get; set; }
+
         #endregion
 
         #region Constructors
@@ -38,6 +43,7 @@ namespace PacManLib.GameObjects
         public Player(GameManager gameManager, Vector2 position, Texture2D texture, int frameWidth, int frameHeight)
             : base(gameManager, position, texture, frameWidth, frameHeight)
         {
+            this.Speed = 140;
         }
 
         #endregion
