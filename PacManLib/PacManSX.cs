@@ -9,6 +9,7 @@
 #region Using Statements
 using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PacManLib.Map;
@@ -63,6 +64,10 @@ namespace PacManLib
 
         private Texture2D lifeTexture;
 
+        private SoundEffect soundGodMode;
+        private SoundEffectInstance soundEngine;
+        private SoundEffect soundChomp;
+        private SoundEffect soundEatScore;
         #endregion
 
         #region Constructors
@@ -195,6 +200,11 @@ namespace PacManLib
             // Turn on godMode.
             player.GodMode = true;
 
+            //Play godmode music
+            soundGodMode = gameManager.ContentManager.Load<SoundEffect>("god_mode");
+            soundGodMode.Play();
+            soundEngine = soundGodMode.CreateInstance();
+
             // If the godmodeOverTimer is not null then stop it.
             if (godmodeOverTimer != null)
                 godmodeOverTimer.Stop();
@@ -223,6 +233,12 @@ namespace PacManLib
 
             // Add the score you get from a ring.
             score += RingScore;
+
+            // Sound for walking over a coin/ring
+            soundEatScore = gameManager.ContentManager.Load<SoundEffect>("coin");
+
+            soundEatScore.Play();
+
         }
 
         /// <summary>
@@ -296,6 +312,9 @@ namespace PacManLib
                             {
                                 direction = Direction.Right;
 
+                                if(player.GodMode)
+                                    direction = reverseMovement(direction);
+
                                 if(!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
                                     direction = Direction.Up;
@@ -317,6 +336,9 @@ namespace PacManLib
                             else
                             {
                                 direction = Direction.Up;
+
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
 
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
@@ -343,6 +365,9 @@ namespace PacManLib
                             {
                                 direction = Direction.Right;
 
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
+
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
                                     direction = Direction.Down;
@@ -364,6 +389,9 @@ namespace PacManLib
                             else
                             {
                                 direction = Direction.Down;
+
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
 
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
@@ -390,6 +418,9 @@ namespace PacManLib
                             {
                                 direction = Direction.Left;
 
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
+
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
                                     direction = Direction.Down;
@@ -411,6 +442,9 @@ namespace PacManLib
                             else
                             {
                                 direction = Direction.Down;
+
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
 
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
@@ -437,6 +471,9 @@ namespace PacManLib
                             {
                                 direction = Direction.Left;
 
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
+
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
                                     direction = Direction.Up;
@@ -458,6 +495,9 @@ namespace PacManLib
                             else
                             {
                                 direction = Direction.Up;
+
+                                if (player.GodMode)
+                                    direction = reverseMovement(direction);
 
                                 if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                                 {
@@ -787,6 +827,9 @@ namespace PacManLib
                 {
                     this.lives--;
                     this.player.Alive = false;
+
+                    soundChomp = gameManager.ContentManager.Load<SoundEffect>("chomp");
+                    soundChomp.Play();
                 }
             }
         }
