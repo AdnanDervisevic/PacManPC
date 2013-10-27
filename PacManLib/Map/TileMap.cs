@@ -34,6 +34,22 @@ namespace PacManLib.Map
         /// </summary>
         public int Level { get; private set; }
 
+        /// <summary>
+        /// Gets the width of the map.
+        /// </summary>
+        public int Width
+        {
+            get { return this.map.GetLength(1); }
+        }
+
+        /// <summary>
+        /// Gets the height of the map.
+        /// </summary>
+        public int Height
+        {
+            get { return this.map.GetLength(0); }
+        }
+
         #endregion
 
         #region Constructors
@@ -101,10 +117,16 @@ namespace PacManLib.Map
 
             for (int y = 0; y < this.map.GetLength(0); y++)
                 for (int x = 0; x < this.map.GetLength(1); x++)
-                    if (this.map[y, x].TileContent > TileContent.Path && this.map[y, x].TileContent < TileContent.Turn)
+                {
+                    if (this.map[y, x].TileContent > TileContent.Path && this.map[y, x].TileContent < TileContent.RingTurn)
                         this.gameManager.SpriteBatch.Draw(
                             this.tileset.Texture, new Vector2(x * PacManSX.TileWidth, y * PacManSX.TileHeight + PacManSX.TitleHeight),
                             this.tileset.GetSourceRectangle((int)this.map[y, x].TileContent - 1), Color.White);
+                    else if (this.map[y, x].TileContent > TileContent.Dot && this.map[y, x].TileContent < TileContent.Door)
+                        this.gameManager.SpriteBatch.Draw(
+                            this.tileset.Texture, new Vector2(x * PacManSX.TileWidth, y * PacManSX.TileHeight + PacManSX.TitleHeight),
+                            this.tileset.GetSourceRectangle((int)this.map[y, x].TileContent - 3), Color.White);
+                }
 
             this.gameManager.SpriteBatch.End();
         }

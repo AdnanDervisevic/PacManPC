@@ -24,9 +24,13 @@ namespace PacManLib.Map
         HorizontalRightStop = 8,
         VerticalTopStop = 9,
         VerticalBottomStop = 10,
-        Door = 11,
-        Turn = 12,
-        Hero = 13,
-        Monster = 14
+        Ring = 11,
+        Dot = 12,
+        RingTurn = 13,
+        DotTurn = 14,
+        Door = 15,
+        Turn = 16,
+        Hero = 18,
+        Monster = 19
     }
 }

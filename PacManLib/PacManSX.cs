@@ -13,6 +13,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PacManLib.Map;
 using PacManLib.GameObjects;
+using System.Timers;
 #endregion End of Using Statements
 
 namespace PacManLib
@@ -33,10 +34,16 @@ namespace PacManLib
         public const int CharacterHeight = 28;
 
         public const int GhostScore = 200;
+        public const int RingScore = 10;
+        public const int DotScore = 50;
+
+        public const int GodModeActiveInSeconds = 10;
 
         #endregion
 
         #region Fields
+
+        private Timer godmodeOverTimer = null;
 
         private TileMap tileMap = null;
         private GameManager gameManager = null;
@@ -75,29 +82,29 @@ namespace PacManLib
 
             this.tileMap = new TileMap(gameManager, 1, new int[,]
                 {
-                    { 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6 },
-                    { 2, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 2 },
+                    { 5, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6 },
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
                     { 2, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 0, 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 5, 1, 1, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 1, 1, 4, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8, 0, 0, 0, 0, 8, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 0, 0, 0, 0, 16, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 0, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 5, 1, 1, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 1, 1, 4, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 0, 0, 0, 0, 16, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 14, 14, 14, 14, 14, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2 },
-                    { 2, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 2 },
-                    { 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4 }
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
+                    { 3, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4 }
                 });
 
             this.player = new Player(this.gameManager, new Vector2(60, 40),
@@ -172,6 +179,54 @@ namespace PacManLib
         #region Private Helpers
 
         /// <summary>
+        /// Method runs when the player has walked over a dot tile.
+        /// </summary>
+        private void PlayerHasEatenDot(Tile tile)
+        {
+            if (tile.TileContent == TileContent.DotTurn)
+                tile.TileContent = TileContent.Turn;
+            else if (tile.TileContent == TileContent.Dot)
+                tile.TileContent = TileContent.Path;
+
+            score += DotScore;
+            player.GodMode = true;
+
+            if (godmodeOverTimer != null)
+                godmodeOverTimer.Stop();
+            else
+            {
+                godmodeOverTimer = new Timer(1000 * GodModeActiveInSeconds);
+                godmodeOverTimer.AutoReset = false;
+                godmodeOverTimer.Elapsed += godModeOver;
+            }
+
+            godmodeOverTimer.Start();
+        }
+
+        /// <summary>
+        /// Method runs when the player has walked over a ring tile.
+        /// </summary>
+        private void PlayerHasEatenRing(Tile tile)
+        {
+            if (tile.TileContent == TileContent.RingTurn)
+                tile.TileContent = TileContent.Turn;
+            else if (tile.TileContent == TileContent.Ring)
+                tile.TileContent = TileContent.Path;
+            
+            score += RingScore;
+        }
+
+        /// <summary>
+        /// Method runs when the godmode should be over.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void godModeOver(object sender, ElapsedEventArgs e)
+        {
+            this.player.GodMode = false;
+        }
+
+        /// <summary>
         /// Method for handling the blue ghosts movement, temporary method.
         /// </summary>
         /// <param name="elapsedGameTime"></param>
@@ -185,13 +240,14 @@ namespace PacManLib
             Tile ghostTile = tileMap.GetTile(ghostCoords); // Get the tile the ghost is located at.
 
             // Check if the tile is a turn or path tile.
-            if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Path)
+            if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Path
+                || ghostTile.TileContent >= TileContent.Ring && ghostTile.TileContent <= TileContent.DotTurn)
             {
                 // Convert the cell to a position.
                 Vector2 ghostTilePosition = PacManSX.ConvertCellToPosition(ghostCoords);
 
                 // Check if the ghost is right ontop of the tile.
-                if (ghostTilePosition == this.blueGhost.Position - new Vector2(0, PacManSX.TitleHeight))
+                if (ghostTilePosition == this.blueGhost.Position)
                 {
                     // Check if the ghost can move in that direction
                     /*
@@ -213,7 +269,8 @@ namespace PacManLib
                      * */
                     direction = Direction.Down; // For test purpose: The ghost should turn down on next turn tile if possible, otherwise stand still or continue in the old direction.
 
-                    if (CanCharacterMove(ghostCoords, direction, out motion))
+                    Tile targetTile = null;
+                    if (CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                     {
                         this.blueGhost.Motion = motion;
                         this.blueGhost.Direction = direction;
@@ -221,7 +278,7 @@ namespace PacManLib
                     else
                     {
                         // If the ghost can't move in that direction then check if the player can move in the old direction.
-                        if (CanCharacterMove(ghostCoords, this.blueGhost.Direction, out motion))
+                        if (CanCharacterMove(ghostCoords, this.blueGhost.Direction, out motion, out targetTile))
                         {
                             this.blueGhost.Motion = motion;
                         }
@@ -258,6 +315,16 @@ namespace PacManLib
         /// </summary>
         private void PlayerMovement(TimeSpan elapsedGameTime)
         {
+            if (this.player.Position.X >= 772)
+                this.player.Position.X = 0;
+            else if (this.player.Position.X <= 0)
+                this.player.Position.X = 772;
+
+            if (this.player.Position.Y >= 452)
+                this.player.Position.Y = PacManSX.TitleHeight;
+            else if (this.player.Position.Y <= 0 + PacManSX.TitleHeight)
+                this.player.Position.Y = 452;
+
             KeyboardState keyboardState = Keyboard.GetState();
 
             Direction direction = this.player.NextDirection;
@@ -266,6 +333,7 @@ namespace PacManLib
             // Converts the center of the player to the players tile coordinates.
             Point playerCoords = PacManSX.ConvertPositionToCell(this.player.Center);
             Tile playerTile = tileMap.GetTile(playerCoords); // Get the tile the player is located at.
+            Tile targetTile = null;
 
             // Check for input, should we change direction?
             if (keyboardState.IsKeyDown(Keys.W))
@@ -278,16 +346,17 @@ namespace PacManLib
                 direction = Direction.Right;
             
             // Check if the tile is a turn or path tile.
-            if (playerTile.TileContent == TileContent.Turn || playerTile.TileContent == TileContent.Path)
+            if (playerTile.TileContent == TileContent.Turn || playerTile.TileContent == TileContent.Path
+                || playerTile.TileContent >= TileContent.Ring && playerTile.TileContent <= TileContent.DotTurn)
             {
                 // Convert the cell to a position.
                 Vector2 playerTilePosition = PacManSX.ConvertCellToPosition(playerCoords);
 
                 // Check if the player is right ontop of the tile.
-                if (playerTilePosition == this.player.Position - new Vector2(0, PacManSX.TitleHeight))
+                if (playerTilePosition == this.player.Position)
                 {
                     // Check if the player can move in that direction
-                    if (CanCharacterMove(playerCoords, direction, out motion))
+                    if (CanCharacterMove(playerCoords, direction, out motion, out targetTile))
                     {
                         this.player.Motion = motion;
                         this.player.Direction = direction;
@@ -296,7 +365,7 @@ namespace PacManLib
                     else
                     {
                         // If the player can't move in that direction then check if the player can move in the old direction.
-                        if (CanCharacterMove(playerCoords, this.player.Direction, out motion))
+                        if (CanCharacterMove(playerCoords, this.player.Direction, out motion, out targetTile))
                         {
                             this.player.NextDirection = direction;
                             this.player.Motion = motion;
@@ -355,6 +424,15 @@ namespace PacManLib
                     // Update next direction.
                     this.player.NextDirection = direction;
                 }
+
+                // If the player walks over a ring, remove it and add score.
+                if (targetTile != null)
+                {
+                    if (targetTile.TileContent == TileContent.Ring || targetTile.TileContent == TileContent.RingTurn)
+                        PlayerHasEatenRing(targetTile);
+                    else if (targetTile.TileContent == TileContent.Dot || targetTile.TileContent == TileContent.DotTurn)
+                        PlayerHasEatenDot(targetTile);
+                }
             }
 
             // Check if we should move.
@@ -375,9 +453,10 @@ namespace PacManLib
         /// <param name="direction">The direction to be checked.</param>
         /// <param name="motion">If the player couldn't move then it's set to (0, 0); otherwise it's set to the direction.</param>
         /// <returns>True if the player can move in that direction; otherwise false.</returns>
-        private bool CanCharacterMove(Point coords, Direction direction, out Vector2 motion)
+        private bool CanCharacterMove(Point coords, Direction direction, out Vector2 motion, out Tile targetTile)
         {
             motion = Vector2.Zero;
+            targetTile = null;
             Point target = new Point();
 
             // Set the target tile depending on the direction.
@@ -413,14 +492,23 @@ namespace PacManLib
                 return false;
 
             // Get the tile at the target.
-            Tile tile = this.tileMap.GetTile(target);
+            targetTile = this.tileMap.GetTile(target);
+
+            if (targetTile == null)
+            {
+                motion = Vector2.Zero;
+                targetTile = null;
+                return false;
+            }
 
             // If the player can move then return true.
-            if (tile.TileContent == TileContent.Path || tile.TileContent == TileContent.Turn)
+            if (targetTile.TileContent == TileContent.Path || targetTile.TileContent == TileContent.Turn
+                || targetTile.TileContent >= TileContent.Ring && targetTile.TileContent <= TileContent.DotTurn)
                 return true;
 
             // else set motion to (0, 0) and return false.
             motion = Vector2.Zero;
+            targetTile = null;
             return false;
         }
 
@@ -495,7 +583,7 @@ namespace PacManLib
         /// <returns></returns>
         public static Vector2 ConvertCellToPosition(Point cell)
         {
-            return new Vector2(cell.X * PacManSX.TileWidth, cell.Y * PacManSX.TileHeight);
+            return new Vector2(cell.X * PacManSX.TileWidth, cell.Y * PacManSX.TileHeight + PacManSX.TileHeight);
         }
 
         /// <summary>

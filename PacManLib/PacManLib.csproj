@@ -63,9 +63,7 @@
     <Compile Include="GameManager.cs" />
     <Compile Include="GameObjects\Bullet.cs" />
     <Compile Include="GameObjects\Character.cs" />
-    <Compile Include="GameObjects\Ring.cs" />
     <Compile Include="GameObjects\Ghost.cs" />
-    <Compile Include="GameObjects\Dot.cs" />
     <Compile Include="GameObjects\Player.cs" />
     <Compile Include="Map\Tile.cs" />
     <Compile Include="Map\TileContent.cs" />
