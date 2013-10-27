@@ -285,41 +285,77 @@ namespace PacManLib
                      * */
 
                     #region Ghost pathfinding for red behaviour
-                    
-                    
-
-                    int xDelta = ghostCoords.X - playerCoords.X;
-                    int yDelta = ghostCoords.Y - playerCoords.Y;
-
-                    if (xDelta < 0)
-                        xDelta *= -1;
-
-                    if (yDelta < 0)
-                        yDelta *= -1;
-
-                    if (ghostCoords.X <= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
+                    if(ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.DotTurn)
                     {
-                        direction = xDelta > yDelta ? Direction.Right : Direction.Up;
-                    }
+                        int xDelta = Math.Abs((ghostCoords.X - playerCoords.X));
+                        int yDelta = Math.Abs((ghostCoords.Y - playerCoords.Y));
 
-                    if (ghostCoords.X <= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
-                    {
-                        direction = xDelta > yDelta ? Direction.Right : Direction.Down;
-                    }
+                        if (ghostCoords.X <= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
+                        {
+                            if (xDelta > yDelta)
+                            {
+                                direction = Direction.Right;
 
-                    if (ghostCoords.X >= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
-                    {
-                        direction = xDelta > yDelta ? Direction.Left : Direction.Down;
-                    }
+                                if(!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Up;
 
-                    if(ghostCoords.X >= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
-                    {
-                        direction = xDelta > yDelta ? Direction.Left : Direction.Up;
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                       
+                                }
+                            }
+
+                            else
+                            {
+                                direction = Direction.Up;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Right;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if (ghostCoords.X <= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
+                        {
+                            direction = xDelta > yDelta ? Direction.Right : Direction.Down;
+                        }
+
+                        if (ghostCoords.X >= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
+                        {
+                            direction = xDelta > yDelta ? Direction.Left : Direction.Down;
+                        }
+
+                        if(ghostCoords.X >= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
+                        {
+                            direction = xDelta > yDelta ? Direction.Left : Direction.Up;
+                        }
                     }
 
                     #endregion
 
-                    
                     if (CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                     {
                         this.blueGhost.Motion = motion;
@@ -357,6 +393,25 @@ namespace PacManLib
 
                 this.blueGhost.Position.X += (float)Math.Round((motion * this.blueGhost.Speed * (float)elapsedGameTime.TotalSeconds).X);
                 this.blueGhost.Position.Y += (float)Math.Round((motion * this.blueGhost.Speed * (float)elapsedGameTime.TotalSeconds).Y);
+            }
+        }
+
+        private Direction reverseMovement(Direction direction)
+        {
+            if (direction == Direction.Up)
+                return Direction.Down;
+            
+            if(direction == Direction.Down)
+                return Direction.Up;
+            
+            if(direction == Direction.Left)
+                return Direction.Right;
+
+            if(direction == Direction.Right)
+                return Direction.Left;
+            else
+            {
+                return Direction.None;
             }
         }
 
