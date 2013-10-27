@@ -12,3 +12,20 @@ D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Blu
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Pacman.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Font.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Life.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacManLib.dll
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacManLib.pdb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.csprojResolveAssemblyReference.cache
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.exe
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.pdb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlueGhost.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Pacman.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Life.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tileset.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Font.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.exe.config
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.exe
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.pdb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\chomp.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\god_mode.xnb
+X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb

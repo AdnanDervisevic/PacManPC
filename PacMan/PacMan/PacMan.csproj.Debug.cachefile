@@ -1,5 +1,8 @@
-Content\tileset.xnb
 Content\BlueGhost.xnb
 Content\Pacman.xnb
-Content\Font.xnb
 Content\Life.xnb
+Content\Tileset.xnb
+Content\Font.xnb
+Content\chomp.xnb
+Content\god_mode.xnb
+Content\coin.xnb
