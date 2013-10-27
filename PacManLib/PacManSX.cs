@@ -242,6 +242,12 @@ namespace PacManLib
         /// <param name="elapsedGameTime"></param>
         private void BlueGhostMovement(TimeSpan elapsedGameTime)
         {
+            // Player coordinates for targeting
+            Point playerCoords = PacManSX.ConvertPositionToCell(this.player.Center);
+
+            Tile targetTile = null;
+
+            // behaviour of current blue ghost will actually be red ghost
             Direction direction = this.blueGhost.Direction;
             Vector2 motion = this.blueGhost.Motion;
 
@@ -277,9 +283,43 @@ namespace PacManLib
                      * 
                      * 
                      * */
-                    direction = Direction.Down; // For test purpose: The ghost should turn down on next turn tile if possible, otherwise stand still or continue in the old direction.
 
-                    Tile targetTile = null;
+                    #region Ghost pathfinding for red behaviour
+                    
+                    
+
+                    int xDelta = ghostCoords.X - playerCoords.X;
+                    int yDelta = ghostCoords.Y - playerCoords.Y;
+
+                    if (xDelta < 0)
+                        xDelta *= -1;
+
+                    if (yDelta < 0)
+                        yDelta *= -1;
+
+                    if (ghostCoords.X <= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
+                    {
+                        direction = xDelta > yDelta ? Direction.Right : Direction.Up;
+                    }
+
+                    if (ghostCoords.X <= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
+                    {
+                        direction = xDelta > yDelta ? Direction.Right : Direction.Down;
+                    }
+
+                    if (ghostCoords.X >= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
+                    {
+                        direction = xDelta > yDelta ? Direction.Left : Direction.Down;
+                    }
+
+                    if(ghostCoords.X >= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
+                    {
+                        direction = xDelta > yDelta ? Direction.Left : Direction.Up;
+                    }
+
+                    #endregion
+
+                    
                     if (CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
                     {
                         this.blueGhost.Motion = motion;
