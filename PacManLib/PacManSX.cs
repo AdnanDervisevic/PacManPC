@@ -311,7 +311,6 @@ namespace PacManLib
                                         }
 
                                     }
-                                       
                                 }
                             }
 
@@ -340,17 +339,143 @@ namespace PacManLib
                         
                         if (ghostCoords.X <= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
                         {
-                            direction = xDelta > yDelta ? Direction.Right : Direction.Down;
+                            if (xDelta > yDelta)
+                            {
+                                direction = Direction.Right;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Down;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+                                direction = Direction.Down;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Right;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
                         }
 
                         if (ghostCoords.X >= playerCoords.X && ghostCoords.Y <= playerCoords.Y)
                         {
-                            direction = xDelta > yDelta ? Direction.Left : Direction.Down;
+                            if (xDelta > yDelta)
+                            {
+                                direction = Direction.Left;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Down;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+                                direction = Direction.Down;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Left;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
                         }
 
                         if(ghostCoords.X >= playerCoords.X && ghostCoords.Y >= playerCoords.Y)
                         {
-                            direction = xDelta > yDelta ? Direction.Left : Direction.Up;
+                            if (xDelta > yDelta)
+                            {
+                                direction = Direction.Left;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Up;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+                                direction = Direction.Up;
+
+                                if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                {
+                                    direction = Direction.Left;
+
+                                    if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                    {
+                                        direction = reverseMovement(direction);
+
+                                        if (!CanCharacterMove(ghostCoords, direction, out motion, out targetTile))
+                                        {
+                                            direction = reverseMovement(blueGhost.Direction);
+                                            CanCharacterMove(ghostCoords, direction, out motion, out targetTile);
+                                        }
+
+                                    }
+                                }
+                            }
                         }
                     }
 
