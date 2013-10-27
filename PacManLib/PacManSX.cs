@@ -183,23 +183,30 @@ namespace PacManLib
         /// </summary>
         private void PlayerHasEatenDot(Tile tile)
         {
+            // Change the tile to either a turn or path tile.
             if (tile.TileContent == TileContent.DotTurn)
                 tile.TileContent = TileContent.Turn;
             else if (tile.TileContent == TileContent.Dot)
                 tile.TileContent = TileContent.Path;
 
+            // Add the score you get from a dot.
             score += DotScore;
+
+            // Turn on godMode.
             player.GodMode = true;
 
+            // If the godmodeOverTimer is not null then stop it.
             if (godmodeOverTimer != null)
                 godmodeOverTimer.Stop();
             else
             {
+                // If it's null then create it.
                 godmodeOverTimer = new Timer(1000 * GodModeActiveInSeconds);
                 godmodeOverTimer.AutoReset = false;
                 godmodeOverTimer.Elapsed += godModeOver;
             }
 
+            // Start the timer.
             godmodeOverTimer.Start();
         }
 
@@ -208,11 +215,13 @@ namespace PacManLib
         /// </summary>
         private void PlayerHasEatenRing(Tile tile)
         {
+            // Change the tile to either a turn or path tile.
             if (tile.TileContent == TileContent.RingTurn)
                 tile.TileContent = TileContent.Turn;
             else if (tile.TileContent == TileContent.Ring)
                 tile.TileContent = TileContent.Path;
-            
+
+            // Add the score you get from a ring.
             score += RingScore;
         }
 
@@ -223,6 +232,7 @@ namespace PacManLib
         /// <param name="e"></param>
         private void godModeOver(object sender, ElapsedEventArgs e)
         {
+            // Turn of godMode.
             this.player.GodMode = false;
         }
 
@@ -315,6 +325,7 @@ namespace PacManLib
         /// </summary>
         private void PlayerMovement(TimeSpan elapsedGameTime)
         {
+            // If the player goes outside the playfield, teleport the player to the other side.
             if (this.player.Position.X >= 772)
                 this.player.Position.X = 0;
             else if (this.player.Position.X <= 0)
@@ -425,7 +436,7 @@ namespace PacManLib
                     this.player.NextDirection = direction;
                 }
 
-                // If the player walks over a ring, remove it and add score.
+                // If the player walks over a ring or dot, run the PlayerHasEatenRing or PlayerHasEatenDot method.
                 if (targetTile != null)
                 {
                     if (targetTile.TileContent == TileContent.Ring || targetTile.TileContent == TileContent.RingTurn)
