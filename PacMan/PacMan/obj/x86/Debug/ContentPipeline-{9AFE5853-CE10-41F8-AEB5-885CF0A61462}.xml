@@ -73,6 +73,15 @@
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb</Output>
       <Time>2013-10-28T15:23:38.8869285+01:00</Time>
     </Item>
+    <Item>
+      <Source>BlackTexture.png</Source>
+      <Name>BlackTexture</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlackTexture.xnb</Output>
+      <Time>2013-10-28T17:07:19+01:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <ContentProjectGUID>{9AFE5853-CE10-41F8-AEB5-885CF0A61462}</ContentProjectGUID>

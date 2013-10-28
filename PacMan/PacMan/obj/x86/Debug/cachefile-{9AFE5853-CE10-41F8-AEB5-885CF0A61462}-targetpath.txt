@@ -6,3 +6,4 @@ Content\Font.xnb
 Content\chomp.xnb
 Content\god_mode.xnb
 Content\coin.xnb
+Content\BlackTexture.xnb

@@ -45,10 +45,16 @@ namespace PacManLib
         #region Fields
 
         private Timer godmodeOverTimer = null;
+        private Timer startGameCountdown = null;
 
         private TileMap tileMap = null;
         private GameManager gameManager = null;
 
+        private bool gameOver = false;
+        private bool gameStarted = false;
+
+        private int gameCountdown = 3;
+        private int dotsAndRingsLeft = 0;
         private int lives = 3;
         private int score = 0;
         private Player player = null;
@@ -62,12 +68,14 @@ namespace PacManLib
         private Vector2 levelPosition;
         private Vector2 scorePosition;
 
+        private Texture2D BlackTexture;
         private Texture2D lifeTexture;
 
         private SoundEffect soundGodMode;
         private SoundEffectInstance soundEngine;
         private SoundEffect soundChomp;
         private SoundEffect soundEatScore;
+
         #endregion
 
         #region Constructors
@@ -84,6 +92,7 @@ namespace PacManLib
             this.scorePosition = new Vector2(120, 0);
 
             this.lifeTexture = this.gameManager.ContentManager.Load<Texture2D>("Life");
+            this.BlackTexture = this.gameManager.ContentManager.Load<Texture2D>("BlackTexture");
 
             this.tileMap = new TileMap(gameManager, 1, new int[,]
                 {
@@ -112,6 +121,8 @@ namespace PacManLib
                     { 3, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4 }
                 });
 
+            this.dotsAndRingsLeft = this.tileMap.DotsAndRings();
+
             this.player = new Player(this.gameManager, new Vector2(60, 40),
                 this.gameManager.ContentManager.Load<Texture2D>("Pacman"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
 
@@ -133,6 +144,10 @@ namespace PacManLib
             this.purpleGhost = new Ghost(this.gameManager, new Vector2(560, 40),
                 this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
             this.purpleGhost.GhostAI += purpleGhostAI;
+
+            this.startGameCountdown = new Timer(1000);
+            this.startGameCountdown.Elapsed += startGameCountdown_Elapsed;
+            this.startGameCountdown.Start();
         }
 
         #endregion
@@ -145,24 +160,35 @@ namespace PacManLib
         /// <param name="elapsedGameTime">Elapsed time since the last update.</param>
         public void Update(TimeSpan elapsedGameTime)
         {
-            // Updates the player and movement.
-            this.player.Update(elapsedGameTime);
-            this.blueGhost.Update(elapsedGameTime);
-            this.greenGhost.Update(elapsedGameTime);
-            this.yellowGhost.Update(elapsedGameTime);
-            this.purpleGhost.Update(elapsedGameTime);
-            
-            // If the player is alive then handle the movement.
-            if (this.player.Alive)
-                PlayerMovement(elapsedGameTime);
+            // Only update the game if it has started.
+            if (gameStarted)
+            {
+                // Check for new round
+                if (this.dotsAndRingsLeft == 0)
+                {
+                    LoadMap();
+                    ResetPositions();
+                }
 
-            // Update the movement for all ghosts.
-            this.blueGhost.Movement(elapsedGameTime, player, tileMap);
-            this.greenGhost.Movement(elapsedGameTime, player, tileMap);
-            this.yellowGhost.Movement(elapsedGameTime, player, tileMap);
-            this.purpleGhost.Movement(elapsedGameTime, player, tileMap);
+                // Updates the player and movement.
+                this.player.Update(elapsedGameTime);
+                this.blueGhost.Update(elapsedGameTime);
+                this.greenGhost.Update(elapsedGameTime);
+                this.yellowGhost.Update(elapsedGameTime);
+                this.purpleGhost.Update(elapsedGameTime);
 
-            PlayerGhostHitbox();
+                // If the player is alive then handle the movement.
+                if (this.player.Alive)
+                    PlayerMovement(elapsedGameTime);
+
+                // Update the movement for all ghosts.
+                this.blueGhost.Movement(elapsedGameTime, player, tileMap);
+                this.greenGhost.Movement(elapsedGameTime, player, tileMap);
+                this.yellowGhost.Movement(elapsedGameTime, player, tileMap);
+                this.purpleGhost.Movement(elapsedGameTime, player, tileMap);
+
+                PlayerGhostHitbox();
+            }
         }
         
         /// <summary>
@@ -173,6 +199,7 @@ namespace PacManLib
         {
             // Clear the screen to black and draw the map and player.
             this.gameManager.SpriteBatch.GraphicsDevice.Clear(new Color(68, 68, 68));
+
             this.tileMap.Draw(elapsedGameTime);
             this.player.Draw(elapsedGameTime);
 
@@ -189,11 +216,136 @@ namespace PacManLib
                 this.gameManager.SpriteBatch.Draw(this.lifeTexture, new Vector2(gameManager.ScreenWidth - lives * 20 - 4, 4) + new Vector2(20 * i, 0), Color.White);
             this.gameManager.SpriteBatch.DrawString(this.font, "Score: " + this.score, this.scorePosition, Color.White);
             this.gameManager.SpriteBatch.End();
+            
+            // If the game has not started then draw a countdown.
+            if (!this.gameStarted)
+            {
+                this.gameManager.SpriteBatch.Begin();
+                this.gameManager.SpriteBatch.Draw(this.BlackTexture, new Rectangle(0, 0, this.gameManager.ScreenWidth, this.gameManager.ScreenHeight), new Color(0, 0, 0, 120));
+
+                Vector2 textSize = this.font.MeasureString("Starts in " + this.gameCountdown);
+                Vector2 textCenter = new Vector2(this.gameManager.ScreenWidth / 2, this.gameManager.ScreenHeight / 2);
+                this.gameManager.SpriteBatch.DrawString(this.font, "Starts in " + this.gameCountdown, textCenter - (textSize / 2), Color.White);
+
+                // If it's game over then draw a "Game Over!" text.
+                if (this.gameOver)
+                {
+                    textSize = this.font.MeasureString("Game Over!");
+                    textCenter = new Vector2(this.gameManager.ScreenWidth / 2, this.gameManager.ScreenHeight / 2 - 50);
+                    this.gameManager.SpriteBatch.DrawString(this.font, "Game Over!", textCenter - (textSize / 2), Color.Yellow);
+                }
+
+                this.gameManager.SpriteBatch.End();
+            }
         }
 
         #endregion
 
         #region Private Helpers
+
+        /// <summary>
+        /// Helper for loading the map.
+        /// </summary>
+        private void LoadMap()
+        {
+            this.tileMap.LoadMap(this.tileMap.Level + 1, new int[,]
+                {
+                    { 5, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6 },
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
+                    { 2, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 1, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 0, 0, 0, 0, 16, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 0, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 5, 1, 1, 6, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 1, 1, 4, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 0, 0, 0, 0, 16, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 14, 14, 14, 14, 14, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2 },
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
+                    { 3, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4 }
+                });
+
+            this.dotsAndRingsLeft = this.tileMap.DotsAndRings();
+        }
+
+        /// <summary>
+        /// Method for reseting all the positions, this is used when the player dies or when the entering the next level.
+        /// </summary>
+        private void ResetPositions()
+        {
+            this.player.Position = new Vector2(60, 40);
+            this.player.Direction = Direction.Right;
+            this.player.Alive = true;
+            this.player.GodMode = false;
+            if (this.godmodeOverTimer != null)
+                this.godmodeOverTimer.Stop();
+
+            this.blueGhost.Position = new Vector2(560, 40);
+            this.blueGhost.Direction = Direction.Right;
+            //this.blueGhost.Alive = true;
+
+            this.greenGhost.Position = new Vector2(560, 40);
+            this.greenGhost.Direction = Direction.Right;
+            //this.greenGhost.Alive = true;
+
+            this.yellowGhost.Position = new Vector2(560, 40);
+            this.yellowGhost.Direction = Direction.Right;
+            //this.yellowGhost.Alive = true;
+
+            this.purpleGhost.Position = new Vector2(560, 40);
+            this.purpleGhost.Direction = Direction.Right;
+            this.purpleGhost.Alive = true;
+
+            this.gameStarted = false;
+
+            // If it's game over, reload the map.
+            if (this.gameOver)
+            {
+                this.tileMap.Level = 0;
+                this.LoadMap();
+            }
+
+            // Start the game countdown.
+            this.gameCountdown = 3;
+            if (this.startGameCountdown != null)
+                this.startGameCountdown.Start();
+        }
+
+        /// <summary>
+        /// Method counts down before the game starts.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void startGameCountdown_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            // Decrease the countdown by one.
+            this.gameCountdown--;
+
+            // If we've reached -1 then start the game.
+            if (this.gameCountdown == -1)
+            {
+                // Reset the lives and score if it's game over.
+                if (this.gameOver)
+                {
+                    this.gameOver = false;
+                    this.lives = 3;
+                    this.score = 0;
+                }
+
+                this.gameStarted = true;
+                this.startGameCountdown.Stop();
+            }
+        }
 
         /// <summary>
         /// Method runs when the player has walked over a dot tile.
@@ -208,6 +360,7 @@ namespace PacManLib
 
             // Add the score you get from a dot.
             score += DotScore;
+            this.dotsAndRingsLeft--;
 
             // Turn on godMode.
             player.GodMode = true;
@@ -245,12 +398,11 @@ namespace PacManLib
 
             // Add the score you get from a ring.
             score += RingScore;
+            this.dotsAndRingsLeft--;
 
             // Sound for walking over a coin/ring
             soundEatScore = gameManager.ContentManager.Load<SoundEffect>("coin");
-
             soundEatScore.Play();
-
         }
 
         /// <summary>
@@ -544,7 +696,6 @@ namespace PacManLib
             #endregion
 
             return direction;
-
         }
 
         /// <summary>
@@ -779,6 +930,7 @@ namespace PacManLib
         /// </summary>
         private void PlayerGhostHitbox()
         {
+            // If the player is not alive then don't check for hitbox.
             if (!this.player.Alive)
                 return;
 
@@ -821,6 +973,13 @@ namespace PacManLib
 
                     soundChomp = gameManager.ContentManager.Load<SoundEffect>("chomp");
                     soundChomp.Play();
+
+                    // Set game over to true if the player doesn't have any lives left.
+                    if (this.lives == 0)
+                        this.gameOver = true;
+                    
+                    // Reset all the posiitons.
+                    this.ResetPositions();
                 }
             }
         }

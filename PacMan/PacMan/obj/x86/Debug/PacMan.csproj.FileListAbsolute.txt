@@ -32,3 +32,4 @@ X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\chomp.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\god_mode.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlackTexture.xnb

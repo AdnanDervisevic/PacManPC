@@ -32,7 +32,7 @@ namespace PacManLib.Map
         /// <summary>
         /// Gets the level number.
         /// </summary>
-        public int Level { get; private set; }
+        public int Level { get; set; }
 
         /// <summary>
         /// Gets the width of the map.
@@ -79,6 +79,41 @@ namespace PacManLib.Map
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Loads a map.
+        /// </summary>
+        /// <param name="level">The level.</param>
+        /// <param name="map">The map.</param>
+        public void LoadMap(int level, int[,] map)
+        {
+            this.Level = level;
+
+            this.map = new Tile[map.GetLength(0), map.GetLength(1)];
+            for (int y = 0; y < map.GetLength(0); y++)
+                for (int x = 0; x < map.GetLength(1); x++)
+                    this.map[y, x] = new Tile()
+                    {
+                        TileContent = (TileContent)map[y, x]
+                    };
+        }
+
+        /// <summary>
+        /// Returns the amount of dots and rings on the map.
+        /// </summary>
+        /// <returns></returns>
+        public int DotsAndRings()
+        {
+            int dotsAndRings = 0;
+
+            for (int y = 0; y < map.GetLength(0); y++)
+                for (int x = 0; x < map.GetLength(1); x++)
+                    if (this.map[y, x].TileContent == TileContent.Dot || this.map[y, x].TileContent == TileContent.DotTurn
+                        || this.map[y, x].TileContent == TileContent.Ring || this.map[y, x].TileContent == TileContent.RingTurn)
+                        dotsAndRings++;
+
+            return dotsAndRings;
+        }
 
         /// <summary>
         /// Gets the tile by its coordinates.
