@@ -76,7 +76,8 @@ namespace PacManLib.GameObjects
 
             // Check if the tile is a turn or path tile.
             if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Path
-                || ghostTile.TileContent >= TileContent.Ring && ghostTile.TileContent <= TileContent.DotTurn)
+                || ghostTile.TileContent >= TileContent.Ring && ghostTile.TileContent <= TileContent.DotTurn
+                || ghostTile.TileContent == TileContent.FruitSpawn)
             {
                 // Convert the cell to a position.
 

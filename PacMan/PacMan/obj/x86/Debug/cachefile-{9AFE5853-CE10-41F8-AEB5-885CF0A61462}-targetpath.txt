@@ -9,3 +9,4 @@ Content\coin.xnb
 Content\BlackTexture.xnb
 Content\Bullet.xnb
 Content\Door.xnb
+Content\Fruits.xnb

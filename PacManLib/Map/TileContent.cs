@@ -31,6 +31,6 @@ namespace PacManLib.Map
         DotTurn = 15,
         Turn = 16,
         Door = 17,
-        
+        FruitSpawn = 18,
     }
 }

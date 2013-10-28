@@ -66,7 +66,7 @@ namespace PacManLib.GameObjects
             {
                 Rectangle rect = this.animation.CurrentSourceRectangle;
                 rect.X = (int)this.Position.X;
-                rect.Y = (int)this.Position.Y - PacManSX.TitleHeight;
+                rect.Y = (int)this.Position.Y;
                 return rect;
             }
         }

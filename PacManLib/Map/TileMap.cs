@@ -118,6 +118,20 @@ namespace PacManLib.Map
         }
 
         /// <summary>
+        /// Returns the fruit spawn point.
+        /// </summary>
+        /// <returns>The coordinates of the first fruit spawn.</returns>
+        public Point GetFruitSpawn()
+        {
+            for (int y = 0; y < this.map.GetLength(0); y++)
+                for (int x = 0; x < this.map.GetLength(1); x++)
+                    if (this.map[y, x].TileContent == TileContent.FruitSpawn)
+                        return new Point(x, y);
+
+            return Point.Zero;
+        }
+
+        /// <summary>
         /// Gets the tile by its coordinates.
         /// </summary>
         /// <param name="coordinates">The coordinates.</param>
@@ -150,7 +164,7 @@ namespace PacManLib.Map
         /// <param name="elapsedGameTime">Elapsed time since the last draw.</param>
         public void Draw(TimeSpan elapsedGameTime)
         {
-            this.gameManager.SpriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
+            this.gameManager.SpriteBatch.Begin();
 
             for (int y = 0; y < this.map.GetLength(0); y++)
                 for (int x = 0; x < this.map.GetLength(1); x++)

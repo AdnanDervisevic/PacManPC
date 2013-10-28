@@ -35,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tileset.xnb</Output>
-      <Time>2013-10-28T18:00:35+01:00</Time>
+      <Time>2013-10-28T21:23:43.1369314+01:00</Time>
     </Item>
     <Item>
       <Source>Font.spritefont</Source>
@@ -99,6 +99,15 @@
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Door.xnb</Output>
       <Time>2013-10-28T18:11:11.9543165+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Fruits.png</Source>
+      <Name>Fruits</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Fruits.xnb</Output>
+      <Time>2013-10-28T21:04:24+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

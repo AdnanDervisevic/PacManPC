@@ -37,30 +37,44 @@ namespace PacManLib
         public const int GhostScore = 200;
         public const int RingScore = 10;
         public const int DotScore = 50;
+        public static readonly int[] FruitScore = 
+        {
+            100, 300, 500, 700, 1000, 2000, 3000, 5000
+        };
 
         public const int BulletCost = 100;
 
+        public const int FruitDespawnInSeconds = 30;
+        public const int FruitMinSpawnTimerInSeconds = 0;
+        public const int FruitMaxSpawnTimerInSeconds = 10;
         public const int GodModeActiveInSeconds = 10;
 
         #endregion
 
         #region Fields
 
-        private Timer godmodeOverTimer = null;
-        private Timer startGameCountdown = null;
-
-        private TileMap tileMap = null;
-        private GameManager gameManager = null;
-
+        private bool fruitSpawned = false;
         private bool bulletAlive = false;
         private bool gameOver = false;
         private bool gameStarted = false;
 
+        
+        private int fruitSpawnTime = -1;
         private int gameCountdown = 3;
         private int dotsAndRingsLeft = 0;
         private int lives = 3;
         private int score = 0;
+
+        private float fruitSpawnTimer = 0;
+        private float startGameTimer = 0;
+        private float godModeTimer = 0;
+
         private Player player = null;
+        private TileMap tileMap = null;
+        private Tileset fruitTileset = null;
+        private GameManager gameManager = null;
+
+        private Random rand = null;
 
         private Ghost purpleGhost = null;
         private Ghost yellowGhost = null;
@@ -68,6 +82,9 @@ namespace PacManLib
         private Ghost greenGhost = null;
 
         private SpriteFont font = null;
+
+        private Rectangle fruitBounds;
+
         private Vector2 levelPosition;
         private Vector2 scorePosition;
         private Vector2 bulletPosition;
@@ -97,14 +114,18 @@ namespace PacManLib
             this.levelPosition = new Vector2(4, 0);
             this.scorePosition = new Vector2(120, 0);
 
+            this.rand = new Random();
+
             this.bulletTexture = this.gameManager.ContentManager.Load<Texture2D>("Bullet");
             this.lifeTexture = this.gameManager.ContentManager.Load<Texture2D>("Life");
             this.BlackTexture = this.gameManager.ContentManager.Load<Texture2D>("BlackTexture");
+            this.fruitTileset = new Tileset(this.gameManager.ContentManager.Load<Texture2D>("Fruits"),
+                PacManSX.TileWidth, PacManSX.TileHeight);
 
             this.tileMap = new TileMap(gameManager, 1, new int[,]
                 {
                     { 5, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6 },
-                    { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
                     { 2, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
@@ -120,7 +141,7 @@ namespace PacManLib
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2 },
@@ -151,10 +172,6 @@ namespace PacManLib
             this.purpleGhost = new Ghost(this.gameManager, new Vector2(560, 40),
                 this.gameManager.ContentManager.Load<Texture2D>("BlueGhost"), PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
             this.purpleGhost.GhostAI += purpleGhostAI;
-
-            this.startGameCountdown = new Timer(1000);
-            this.startGameCountdown.Elapsed += startGameCountdown_Elapsed;
-            this.startGameCountdown.Start();
         }
 
         #endregion
@@ -170,11 +187,75 @@ namespace PacManLib
             // Only update the game if it has started.
             if (gameStarted)
             {
-                // Check for new round
+                // Check if the player has eaten all the dots and rings.
                 if (this.dotsAndRingsLeft == 0)
                 {
+                    // Then load the new map and reset all the positions.
                     LoadMap();
                     ResetPositions();
+                }
+
+                // Check if player is in godmode, then start the coutdown and remove godmode after PacManSX.GodModeActiveInSeconds.
+                if (this.player.GodMode)
+                {
+                    this.godModeTimer += (float)elapsedGameTime.TotalSeconds;
+
+                    if (this.godModeTimer >= PacManSX.GodModeActiveInSeconds)
+                    {
+                        this.player.GodMode = false;
+                        this.godModeTimer = 0;
+                    }
+                }
+
+                // Check if we should spawn a fruit.
+                if (!this.fruitSpawned && this.fruitSpawnTime >= 0)
+                {
+                    this.fruitSpawnTimer += (float)elapsedGameTime.TotalSeconds;
+                    if (this.fruitSpawnTimer >= this.fruitSpawnTime)
+                    {
+                        // Spawn the fruit.
+                        Point fruitSpawnCoords = this.tileMap.GetFruitSpawn();
+                        if (fruitSpawnCoords.X > 0 && fruitSpawnCoords.Y > 0)
+                        {
+                            Vector2 fruitPos = PacManSX.ConvertCellToPosition(fruitSpawnCoords);
+                            this.fruitBounds = new Rectangle(
+                                (int)fruitPos.X, (int)fruitPos.Y, 
+                                PacManSX.TileWidth, PacManSX.TileHeight);
+
+                            // Create a new SpawnTime and reset the timer.
+                            this.fruitSpawnTime = PacManSX.FruitDespawnInSeconds;
+                            this.fruitSpawnTimer = 0;
+                            this.fruitSpawned = true;
+                        }
+                        else
+                        {
+                            // If spawnCoords are out of bound then just don't spawn any fruit.
+                            this.fruitSpawnTime = -1;
+                        }
+                    }
+                }
+                else if (this.fruitSpawned && this.fruitSpawnTime == PacManSX.FruitDespawnInSeconds)
+                {
+                    if (this.player.Bounds.Intersects(this.fruitBounds))
+                    {
+                        int fruitIndex = this.tileMap.Level - 1 % PacManSX.FruitScore.GetLength(0);
+                        this.score += PacManSX.FruitScore[fruitIndex];
+                        this.fruitSpawnTime = rand.Next(PacManSX.FruitMinSpawnTimerInSeconds, PacManSX.FruitMaxSpawnTimerInSeconds);
+                        this.fruitSpawnTimer = 0;
+                        this.fruitSpawned = false;
+                    }
+                    else
+                    {
+                        // Or if the fruit is spawned and the fruit spawn time is over 0 then despawn it after FruitSpawnTime
+                        this.fruitSpawnTimer += (float)elapsedGameTime.TotalSeconds;
+                        if (this.fruitSpawnTimer >= this.fruitSpawnTime)
+                        {
+                            // Despawn the fruit.
+                            this.fruitSpawnTime = rand.Next(PacManSX.FruitMinSpawnTimerInSeconds, PacManSX.FruitMaxSpawnTimerInSeconds);
+                            this.fruitSpawnTimer = 0;
+                            this.fruitSpawned = false;
+                        }
+                    }
                 }
 
                 // Updates the player and movement.
@@ -226,6 +307,34 @@ namespace PacManLib
                     }
                 }
             }
+            else
+            {
+                this.startGameTimer += (float)elapsedGameTime.TotalSeconds;
+
+                if (this.startGameTimer >= 1)
+                {
+                    // Decrease the countdown by one.
+                    this.gameCountdown--;
+
+                    // If we've reached -1 then start the game.
+                    if (this.gameCountdown == -1)
+                    {
+                        // Reset the lives and score if it's game over.
+                        if (this.gameOver)
+                        {
+                            this.gameOver = false;
+                            this.lives = 3;
+                            this.score = 0;
+                        }
+
+                        this.fruitSpawnTime = rand.Next(PacManSX.FruitMinSpawnTimerInSeconds, PacManSX.FruitMaxSpawnTimerInSeconds);
+
+                        this.gameStarted = true;
+                    }
+
+                    this.startGameTimer = 0;
+                }
+            }
         }
         
         /// <summary>
@@ -251,6 +360,10 @@ namespace PacManLib
             // Draw the bullet
             if (this.bulletAlive)
                 this.gameManager.SpriteBatch.Draw(this.bulletTexture, this.bulletPosition, Color.White);
+
+            // Draw the fruit
+            if (this.fruitSpawned)
+                this.gameManager.SpriteBatch.Draw(this.fruitTileset.Texture, this.fruitBounds, this.fruitTileset.GetSourceRectangle(this.tileMap.Level - 1), Color.White);
 
             // Draw the GUI.
             this.gameManager.SpriteBatch.DrawString(this.font, "Level: " + this.tileMap.Level, this.levelPosition, Color.White);
@@ -293,7 +406,7 @@ namespace PacManLib
             this.tileMap.LoadMap(this.tileMap.Level + 1, new int[,]
                 {
                     { 5, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6 },
-                    { 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
+                    { 2, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 2 },
                     { 2, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 0, 7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 6, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
@@ -309,7 +422,7 @@ namespace PacManLib
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 1, 1, 1, 1, 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
-                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
+                    { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2 },
                     { 2, 0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 0, 2 },
@@ -329,8 +442,6 @@ namespace PacManLib
             this.player.Direction = Direction.Right;
             this.player.Alive = true;
             this.player.GodMode = false;
-            if (this.godmodeOverTimer != null)
-                this.godmodeOverTimer.Stop();
 
             this.blueGhost.Position = new Vector2(560, 40);
             this.blueGhost.Direction = Direction.Right;
@@ -348,8 +459,6 @@ namespace PacManLib
             this.purpleGhost.Direction = Direction.Right;
             this.purpleGhost.Alive = true;
 
-            this.gameStarted = false;
-
             // If it's game over, reload the map.
             if (this.gameOver)
             {
@@ -357,36 +466,11 @@ namespace PacManLib
                 this.LoadMap();
             }
 
+            this.fruitSpawned = false;
+
             // Start the game countdown.
             this.gameCountdown = 3;
-            if (this.startGameCountdown != null)
-                this.startGameCountdown.Start();
-        }
-
-        /// <summary>
-        /// Method counts down before the game starts.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void startGameCountdown_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            // Decrease the countdown by one.
-            this.gameCountdown--;
-
-            // If we've reached -1 then start the game.
-            if (this.gameCountdown == -1)
-            {
-                // Reset the lives and score if it's game over.
-                if (this.gameOver)
-                {
-                    this.gameOver = false;
-                    this.lives = 3;
-                    this.score = 0;
-                }
-
-                this.gameStarted = true;
-                this.startGameCountdown.Stop();
-            }
+            this.gameStarted = false;
         }
 
         /// <summary>
@@ -411,20 +495,6 @@ namespace PacManLib
             soundGodMode = gameManager.ContentManager.Load<SoundEffect>("god_mode");
             soundGodMode.Play();
             soundEngine = soundGodMode.CreateInstance();
-
-            // If the godmodeOverTimer is not null then stop it.
-            if (godmodeOverTimer != null)
-                godmodeOverTimer.Stop();
-            else
-            {
-                // If it's null then create it.
-                godmodeOverTimer = new Timer(1000 * GodModeActiveInSeconds);
-                godmodeOverTimer.AutoReset = false;
-                godmodeOverTimer.Elapsed += godModeOver;
-            }
-
-            // Start the timer.
-            godmodeOverTimer.Start();
         }
 
         /// <summary>
@@ -445,17 +515,6 @@ namespace PacManLib
             // Sound for walking over a coin/ring
             soundEatScore = gameManager.ContentManager.Load<SoundEffect>("coin");
             soundEatScore.Play();
-        }
-
-        /// <summary>
-        /// Method runs when the godmode should be over.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void godModeOver(object sender, ElapsedEventArgs e)
-        {
-            // Turn of godMode.
-            this.player.GodMode = false;
         }
 
         /// <summary>
@@ -517,7 +576,7 @@ namespace PacManLib
 
             #region Ghost pathfinding for red behaviour
 
-            if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.DotTurn)
+            if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.RingTurn || ghostTile.TileContent == TileContent.DotTurn)
             {
                 int xDelta = Math.Abs((ghostCoords.X - playerCoords.X));
                 int yDelta = Math.Abs((ghostCoords.Y - playerCoords.Y));
@@ -805,7 +864,8 @@ namespace PacManLib
             
             // Check if the tile is a turn or path tile.
             if (playerTile.TileContent == TileContent.Turn || playerTile.TileContent == TileContent.Path
-                || playerTile.TileContent >= TileContent.Ring && playerTile.TileContent <= TileContent.DotTurn)
+                || playerTile.TileContent >= TileContent.Ring && playerTile.TileContent <= TileContent.DotTurn
+                || playerTile.TileContent == TileContent.FruitSpawn)
             {
                 // Convert the cell to a position.
                 Vector2 playerTilePosition = PacManSX.ConvertCellToPosition(playerCoords);
@@ -986,7 +1046,8 @@ namespace PacManLib
 
             // If the player can move then return true.
             if (targetTile.TileContent == TileContent.Path || targetTile.TileContent == TileContent.Turn
-                || targetTile.TileContent >= TileContent.Ring && targetTile.TileContent <= TileContent.DotTurn)
+                || targetTile.TileContent >= TileContent.Ring && targetTile.TileContent <= TileContent.DotTurn
+                || targetTile.TileContent == TileContent.FruitSpawn)
                 return true;
 
             // else set motion to (0, 0) and return false.
@@ -1007,27 +1068,37 @@ namespace PacManLib
             // Check if the player is in god mode.
             if (this.player.GodMode)
             {
+                int scoreMultiplier = 1;
+                if (!this.blueGhost.Alive)
+                    scoreMultiplier *= 2;
+                if (!this.greenGhost.Alive)
+                    scoreMultiplier *= 2;
+                if (this.yellowGhost.Alive)
+                    scoreMultiplier *= 2;
+                if (this.purpleGhost.Alive)
+                    scoreMultiplier *= 2;
+
                 // If he is in godmode then he should be able to eat the ghost.
                 // If the player and a ghost collides, kill the ghost and recieve score.
                 if (this.blueGhost.Alive && this.blueGhost.Bounds.Intersects(this.player.Bounds))
                 {
                     this.blueGhost.Alive = false;
-                    this.score += PacManSX.GhostScore;
+                    this.score += PacManSX.GhostScore * scoreMultiplier;
                 }
                 else if (this.greenGhost.Alive && this.greenGhost.Bounds.Intersects(this.player.Bounds))
                 {
                     this.greenGhost.Alive = false;
-                    this.score += PacManSX.GhostScore;
+                    this.score += PacManSX.GhostScore * scoreMultiplier;
                 }
                 else if (this.yellowGhost.Alive && this.yellowGhost.Bounds.Intersects(this.player.Bounds))
                 {
                     this.yellowGhost.Alive = false;
-                    this.score += PacManSX.GhostScore;
+                    this.score += PacManSX.GhostScore * scoreMultiplier;
                 }
                 else if (this.purpleGhost.Alive && this.purpleGhost.Bounds.Intersects(this.player.Bounds))
                 {
                     this.purpleGhost.Alive = false;
-                    this.score += PacManSX.GhostScore;
+                    this.score += PacManSX.GhostScore * scoreMultiplier;
                 }
             }
             else

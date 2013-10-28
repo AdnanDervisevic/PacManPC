@@ -35,3 +35,4 @@ D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coi
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlackTexture.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Bullet.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Door.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Fruits.xnb
