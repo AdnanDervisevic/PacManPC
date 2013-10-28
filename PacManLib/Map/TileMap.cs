@@ -21,6 +21,7 @@ namespace PacManLib.Map
     {
         #region Fields
 
+        private Texture2D doorTexture = null;
         private Tileset tileset = null;
         private Tile[,] map = null;
         private GameManager gameManager = null;
@@ -66,6 +67,7 @@ namespace PacManLib.Map
             this.tileset = new Tileset(
                 this.gameManager.ContentManager.Load<Texture2D>("Tileset"),
                 PacManSX.TileWidth, PacManSX.TileHeight);
+            this.doorTexture = this.gameManager.ContentManager.Load<Texture2D>("Door");
 
             this.map = new Tile[map.GetLength(0), map.GetLength(1)];
             for (int y = 0; y < map.GetLength(0); y++)
@@ -148,7 +150,7 @@ namespace PacManLib.Map
         /// <param name="elapsedGameTime">Elapsed time since the last draw.</param>
         public void Draw(TimeSpan elapsedGameTime)
         {
-            this.gameManager.SpriteBatch.Begin();
+            this.gameManager.SpriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend);
 
             for (int y = 0; y < this.map.GetLength(0); y++)
                 for (int x = 0; x < this.map.GetLength(1); x++)
@@ -157,10 +159,12 @@ namespace PacManLib.Map
                         this.gameManager.SpriteBatch.Draw(
                             this.tileset.Texture, new Vector2(x * PacManSX.TileWidth, y * PacManSX.TileHeight + PacManSX.TitleHeight),
                             this.tileset.GetSourceRectangle((int)this.map[y, x].TileContent - 1), Color.White);
-                    else if (this.map[y, x].TileContent > TileContent.Dot && this.map[y, x].TileContent < TileContent.Door)
+                    else if (this.map[y, x].TileContent > TileContent.Dot && this.map[y, x].TileContent < TileContent.Turn)
                         this.gameManager.SpriteBatch.Draw(
                             this.tileset.Texture, new Vector2(x * PacManSX.TileWidth, y * PacManSX.TileHeight + PacManSX.TitleHeight),
                             this.tileset.GetSourceRectangle((int)this.map[y, x].TileContent - 3), Color.White);
+                    else if (this.map[y, x].TileContent == TileContent.Door)
+                        this.gameManager.SpriteBatch.Draw(this.doorTexture, new Vector2(x * PacManSX.TileWidth - 5, y * PacManSX.TileHeight + PacManSX.TitleHeight), Color.White);
                 }
 
             this.gameManager.SpriteBatch.End();

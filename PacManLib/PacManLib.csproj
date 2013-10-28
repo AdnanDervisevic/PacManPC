@@ -61,7 +61,6 @@
   <ItemGroup>
     <Compile Include="Direction.cs" />
     <Compile Include="GameManager.cs" />
-    <Compile Include="GameObjects\Bullet.cs" />
     <Compile Include="GameObjects\Character.cs" />
     <Compile Include="GameObjects\Ghost.cs" />
     <Compile Include="GameObjects\Player.cs" />

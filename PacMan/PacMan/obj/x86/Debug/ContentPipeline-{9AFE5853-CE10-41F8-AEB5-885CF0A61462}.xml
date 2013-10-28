@@ -35,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tileset.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Time>2013-10-28T18:00:35+01:00</Time>
     </Item>
     <Item>
       <Source>Font.spritefont</Source>
@@ -81,6 +81,24 @@
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlackTexture.xnb</Output>
       <Time>2013-10-28T17:07:19+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Bullet.png</Source>
+      <Name>Bullet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Bullet.xnb</Output>
+      <Time>2013-10-28T18:09:15+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Door.png</Source>
+      <Name>Door</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Door.xnb</Output>
+      <Time>2013-10-28T18:11:11.9543165+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
