@@ -60,22 +60,13 @@ namespace PacManLib.Map
         /// </summary>
         /// <param name="gameManager">The game manager.</param>
         /// <param name="map">The map.</param>
-        public TileMap(GameManager gameManager, int level, int[,] map)
+        public TileMap(GameManager gameManager)
         {
-            this.Level = level;
             this.gameManager = gameManager;
             this.tileset = new Tileset(
                 this.gameManager.ContentManager.Load<Texture2D>("Tileset"),
                 PacManSX.TileWidth, PacManSX.TileHeight);
             this.doorTexture = this.gameManager.ContentManager.Load<Texture2D>("Door");
-
-            this.map = new Tile[map.GetLength(0), map.GetLength(1)];
-            for (int y = 0; y < map.GetLength(0); y++)
-                for (int x = 0; x < map.GetLength(1); x++)
-                    this.map[y, x] = new Tile()
-                    {
-                        TileContent = (TileContent)map[y, x]
-                    };
         }
 
         #endregion
@@ -141,7 +132,7 @@ namespace PacManLib.Map
         {
             Point[] spawns = new Point[spawnPoints.GetLength(0)];
             for (int i = 0; i < spawns.GetLength(0); i++)
-                spawns[i] = new Point(0, 0);
+                spawns[i] = new Point(-1, -1);
 
             for (int y = 0; y < this.map.GetLength(0); y++)
                 for (int x = 0; x < this.map.GetLength(1); x++)
