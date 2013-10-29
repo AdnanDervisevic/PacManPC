@@ -5,10 +5,8 @@ D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.cspr
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.exe
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.pdb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\tileset.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\PacManLib.dll
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\PacManLib.pdb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlueGhost.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Pacman.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Font.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Life.xnb
@@ -29,10 +27,20 @@ X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.pdb
 X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\chomp.xnb
 X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\god_mode.xnb
 X:\Dropbox\Högskola\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\chomp.xnb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\god_mode.xnb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\coin.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\BlackTexture.xnb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Bullet.xnb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Door.xnb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Fruits.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\BlueGhost.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\BlueGhostGodMode.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\GreenGhost.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\PurpleGhost.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\YellowGhost.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\GreenGhostGodMode.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\PurpleGhostGodMode.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\YellowGhostGodMode.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tiles\Door.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tiles\Fruits.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tiles\Tileset.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Sounds\chomp.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Sounds\coin.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Sounds\god_mode.xnb
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\PacmanGodMode.xnb
