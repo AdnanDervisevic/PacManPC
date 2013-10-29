@@ -7,6 +7,7 @@
 #endregion
 
 #region Using Statements
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 #endregion End of Using Statements
@@ -42,6 +43,11 @@ namespace PacManLib
         /// Gets the content manager.
         /// </summary>
         public ContentManager ContentManager { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the display orientation. This is set automatically and should never be set manually.
+        /// </summary>
+        public DisplayOrientation DisplayOrientation { get; set; }
 
         /// <summary>
         /// Gets the height of the screen in pixels.
