@@ -29,7 +29,7 @@ namespace PacManLib
     {
         #region Consts
 #if WINDOWS_PHONE
-        public const float AccelerometerNoise = 0.2f;
+        public const float AccelerometerDifference = 0.17f;
 #endif
 
         public const int TitleHeight = 20;
@@ -43,13 +43,13 @@ namespace PacManLib
         public const int GhostScore = 200;
         public const int RingScore = 10;
         public const int DotScore = 50;
-        public static readonly int[] FruitScore = 
-        {
-            100, 300, 500, 700, 1000, 2000, 3000, 5000
-        };
+        public const int FruitScoreMultiplier = 300;
 
-        public const int BulletCost = 0;
+        public const int StartBulletCost = 10;
 
+        public const int PathTarget = 4;
+
+        public const int GhostRespawnInSeconds = 5;
         public const int FruitDespawnInSeconds = 30;
         public const int FruitMinSpawnTimerInSeconds = 0;
         public const int FruitMaxSpawnTimerInSeconds = 10;
@@ -61,8 +61,11 @@ namespace PacManLib
 
 #if WINDOWS_PHONE
         private Accelerometer accelerometer = null;
-        private Vector3 accelReading = new Vector3();
+        private Vector2 accelCurrentValue = new Vector2();
         private bool accelActive = false;
+        private Vector2 accelCalibration;
+        private bool accelCalibrated = false;
+        
         private bool accelInitialized = false;
         private float lastX = 0;
         private float lastY = 0;
@@ -80,6 +83,7 @@ namespace PacManLib
         private int lives = 3;
         private int score = 0;
         private int ironBullets = 0;
+        private int bulletsFired = 0;
 
         private float fruitSpawnTimer = 0;
         private float startGameTimer = 0;
@@ -166,50 +170,50 @@ namespace PacManLib
 
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
-                this.player = new Player(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]),
+                this.player = new Player(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]), Direction.Right,
                     this.GameManager.ContentManager.Load<Texture2D>("Pacman"), this.GameManager.ContentManager.Load<Texture2D>("PacmanGodMode"), 
-                    PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+                    PacManSX.CharacterWidth, PacManSX.CharacterHeight);
             }
             i++;
 
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
-                this.blueGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]),
+                this.blueGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]), Direction.Right,
                     this.GameManager.ContentManager.Load<Texture2D>("Ghosts/BlueGhost"), this.GameManager.ContentManager.Load<Texture2D>("Ghosts/BlueGhostGodMode"), 
-                    PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+                    PacManSX.CharacterWidth, PacManSX.CharacterHeight);
                 this.blueGhost.GhostAI += blueGhostAI;
             }
             i++;
 
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
-                this.greenGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]),
+                this.greenGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]), Direction.Right,
                     this.GameManager.ContentManager.Load<Texture2D>("Ghosts/GreenGhost"), this.GameManager.ContentManager.Load<Texture2D>("Ghosts/GreenGhostGodMode"),
-                    PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+                    PacManSX.CharacterWidth, PacManSX.CharacterHeight);
                 this.greenGhost.GhostAI += greenGhostAI;
             }
             i++;
 
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
-                this.yellowGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]),
+                this.yellowGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]), Direction.Right,
                     this.GameManager.ContentManager.Load<Texture2D>("Ghosts/YellowGhost"), this.GameManager.ContentManager.Load<Texture2D>("Ghosts/YellowGhostGodMode"),
-                    PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+                    PacManSX.CharacterWidth, PacManSX.CharacterHeight);
                 this.yellowGhost.GhostAI += yellowGhostAI;
             }
             i++;
 
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
-                this.purpleGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]),
+                this.purpleGhost = new Ghost(this.GameManager, PacManSX.ConvertCellToPosition(spawnCoords[i]), Direction.Right,
                     this.GameManager.ContentManager.Load<Texture2D>("Ghosts/PurpleGhost"), this.GameManager.ContentManager.Load<Texture2D>("Ghosts/PurpleGhostGodMode"),
-                    PacManSX.CharacterWidth, PacManSX.CharacterHeight) { Direction = Direction.Right };
+                    PacManSX.CharacterWidth, PacManSX.CharacterHeight);
                 this.purpleGhost.GhostAI += purpleGhostAI;
             }
 
 #if WINDOWS_PHONE
             // Initialize Windows phone stuff.
-            TouchPanel.EnabledGestures = GestureType.Tap;
+            TouchPanel.EnabledGestures = GestureType.DoubleTap;
             this.accelerometer = new Accelerometer();
             this.accelerometer.CurrentValueChanged += accelerometer_CurrentValueChanged;
 #endif
@@ -280,8 +284,7 @@ namespace PacManLib
                 {
                     if (this.player.Bounds.Intersects(this.fruitBounds))
                     {
-                        int fruitIndex = this.tileMap.Level - 1 % PacManSX.FruitScore.GetLength(0);
-                        this.score += PacManSX.FruitScore[fruitIndex];
+                        this.score += PacManSX.FruitScoreMultiplier * this.tileMap.Level * this.tileMap.Level;
                         this.fruitSpawnTime = rand.Next(PacManSX.FruitMinSpawnTimerInSeconds, PacManSX.FruitMaxSpawnTimerInSeconds);
                         this.fruitSpawnTimer = 0;
                         this.fruitSpawned = false;
@@ -347,7 +350,17 @@ namespace PacManLib
 
                     // Calculate the bounds of the bullet and check if it intersects with a ghost.
                     Rectangle bulletBounds = new Rectangle((int)this.bulletPosition.X, (int)this.bulletPosition.Y, 20, 20);
-                    if (bulletBounds.Intersects(this.purpleGhost.Bounds))
+
+                    if (this.blueGhost != null && bulletBounds.Intersects(this.blueGhost.Bounds))
+                        this.bulletAlive = false;
+
+                    if (this.greenGhost != null && bulletBounds.Intersects(this.greenGhost.Bounds))
+                        this.bulletAlive = false;
+
+                    if (this.yellowGhost != null && bulletBounds.Intersects(this.yellowGhost.Bounds))
+                        this.bulletAlive = false;
+
+                    if (this.purpleGhost != null && bulletBounds.Intersects(this.purpleGhost.Bounds))
                         this.bulletAlive = false;
 
                     // Convert the center of the bullet to the bullet coordinates.
@@ -374,12 +387,15 @@ namespace PacManLib
             else
             {
 #if WINDOWS_PHONE
-                try
+                if (this.accelActive)
                 {
-                    this.accelerometer.Stop();
-                    this.accelActive = false;
+                    try
+                    {
+                        this.accelerometer.Stop();
+                        this.accelActive = false;
+                    }
+                    catch (Exception) { }
                 }
-                catch (Exception) { }
 #endif
                 this.startGameTimer += (float)elapsedGameTime.TotalSeconds;
 
@@ -403,14 +419,19 @@ namespace PacManLib
 
                         this.gameStarted = true;
 #if WINDOWS_PHONE
-                        try
+                        this.accelCalibrated = false;
+
+                        if (!this.accelActive)
                         {
-                            this.accelerometer.Start();
-                            this.accelActive = true;
-                        }
-                        catch (Exception)
-                        {
-                            this.accelActive = false;
+                            try
+                            {
+                                this.accelerometer.Start();
+                                this.accelActive = true;
+                            }
+                            catch (Exception)
+                            {
+                                this.accelActive = false;
+                            }
                         }
 #endif
                     }
@@ -496,9 +517,17 @@ namespace PacManLib
         /// </summary>
         private void accelerometer_CurrentValueChanged(object sender, SensorReadingEventArgs<AccelerometerReading> e)
         {
-            this.accelReading.X = (float)e.SensorReading.Acceleration.X;
-            this.accelReading.Y = (float)e.SensorReading.Acceleration.Y;
-            this.accelReading.Z = (float)e.SensorReading.Acceleration.Z;
+            if (!this.accelCalibrated)
+            {
+                this.accelCalibration.X = (float)e.SensorReading.Acceleration.X;
+                this.accelCalibration.Y = (float)e.SensorReading.Acceleration.Y;
+                this.accelCalibrated = true;
+            }
+            else
+            {
+                this.accelCurrentValue.X = (float)e.SensorReading.Acceleration.X;
+                this.accelCurrentValue.Y = (float)e.SensorReading.Acceleration.Y;
+            }
         }
 
 #endif
@@ -539,10 +568,10 @@ namespace PacManLib
 
                 this.tileMap.UpdateTile(new Point(14, 17), SpawnPoint.Fruit);
                 this.tileMap.UpdateTile(new Point(1, 1), SpawnPoint.Player);
-                this.tileMap.UpdateTile(new Point(21, 1), SpawnPoint.BlueGhost);
+                /*this.tileMap.UpdateTile(new Point(21, 1), SpawnPoint.BlueGhost);
                 this.tileMap.UpdateTile(new Point(23, 1), SpawnPoint.GreenGhost);
                 this.tileMap.UpdateTile(new Point(25, 1), SpawnPoint.YellowGhost);
-                this.tileMap.UpdateTile(new Point(27, 1), SpawnPoint.PurpleGhost);
+                this.tileMap.UpdateTile(new Point(27, 1), SpawnPoint.PurpleGhost);*/
             }
 
             this.dotsAndRingsLeft = this.tileMap.DotsAndRings();
@@ -562,7 +591,8 @@ namespace PacManLib
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
                 this.player.Position = PacManSX.ConvertCellToPosition(spawnCoords[i]);
-                this.player.Direction = Direction.Right;
+                this.player.Direction = this.player.StartDirection;
+                this.player.NextDirection = Direction.None;
                 this.player.Alive = true;
                 this.player.GodMode = false;
             }
@@ -571,7 +601,7 @@ namespace PacManLib
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
                 this.blueGhost.Position = PacManSX.ConvertCellToPosition(spawnCoords[i]);
-                this.blueGhost.Direction = Direction.Right;
+                this.blueGhost.Direction = this.blueGhost.StartDirection;
                 this.blueGhost.Alive = true;
             }
             i++;
@@ -579,7 +609,7 @@ namespace PacManLib
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
                 this.greenGhost.Position = PacManSX.ConvertCellToPosition(spawnCoords[i]);
-                this.greenGhost.Direction = Direction.Right;
+                this.greenGhost.Direction = this.greenGhost.StartDirection;
                 this.greenGhost.Alive = true;
             }
             i++;
@@ -587,7 +617,7 @@ namespace PacManLib
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
                 this.yellowGhost.Position = PacManSX.ConvertCellToPosition(spawnCoords[i]);
-                this.yellowGhost.Direction = Direction.Right;
+                this.yellowGhost.Direction = this.yellowGhost.StartDirection;
                 this.yellowGhost.Alive = true;
             }
             i++;
@@ -595,7 +625,7 @@ namespace PacManLib
             if (spawnCoords[i].X >= 0 || spawnCoords[i].Y >= 0)
             {
                 this.purpleGhost.Position = PacManSX.ConvertCellToPosition(spawnCoords[i]);
-                this.purpleGhost.Direction = Direction.Right;
+                this.purpleGhost.Direction = this.purpleGhost.StartDirection;
                 this.purpleGhost.Alive = true;
             }
 
@@ -678,13 +708,13 @@ namespace PacManLib
 
                 // based on direction tries to estimate in front of the player by one tile to try and get slightly more accurate and predicting
                 if (player.Direction == Direction.Right)
-                    predictedCoords.X = playerCoords.X + 1;
+                    predictedCoords.X = playerCoords.X + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Left)
-                    predictedCoords.X = playerCoords.X - 1;
+                    predictedCoords.X = playerCoords.X - PacManSX.PathTarget;
                 else if (player.Direction == Direction.Up)
-                    predictedCoords.Y = playerCoords.Y + 1;
+                    predictedCoords.Y = playerCoords.Y + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Down)
-                    predictedCoords.Y = playerCoords.Y - 1;
+                    predictedCoords.Y = playerCoords.Y - PacManSX.PathTarget;
 
                 // calculates which path is closer purely based on distance between x and y of the player and ghost
                 int xDelta = Math.Abs((ghostCoords.X - predictedCoords.X));
@@ -1171,7 +1201,9 @@ namespace PacManLib
             motion = ghost.Motion;
             Tile targetTile = null;
 
-            #region Ghost pathfinding for red behaviour
+            #region Ghost pathfinding for orange behaviour
+
+            int randomNumber = rand.Next(0, 1);
 
             if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.RingTurn || ghostTile.TileContent == TileContent.DotTurn)
             {
@@ -1181,13 +1213,13 @@ namespace PacManLib
 
                 // based on direction tries to estimate in front of the player by one tile to try and get slightly more accurate and predicting
                 if (player.Direction == Direction.Right)
-                    predictedCoords.X = playerCoords.X + 1;
+                    predictedCoords.X = playerCoords.X + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Left)
-                    predictedCoords.X = playerCoords.X - 1;
+                    predictedCoords.X = playerCoords.X - PacManSX.PathTarget;
                 else if (player.Direction == Direction.Up)
-                    predictedCoords.Y = playerCoords.Y + 1;
+                    predictedCoords.Y = playerCoords.Y + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Down)
-                    predictedCoords.Y = playerCoords.Y - 1;
+                    predictedCoords.Y = playerCoords.Y - PacManSX.PathTarget;
 
                 int whichPathFinding = rand.Next(0, 1);
 
@@ -1200,6 +1232,9 @@ namespace PacManLib
                     if (xDelta > yDelta)
                     {
                         direction = Direction.Right;
+
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                         if (player.GodMode)
                             direction = reverseMovement(direction);
@@ -1225,6 +1260,9 @@ namespace PacManLib
                     else
                     {
                         direction = Direction.Up;
+
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                         if (player.GodMode)
                             direction = reverseMovement(direction);
@@ -1254,12 +1292,18 @@ namespace PacManLib
                     {
                         direction = Direction.Right;
 
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
+
                         if (player.GodMode)
                             direction = reverseMovement(direction);
 
                         if (!PacManSX.CanGhostMove(this.tileMap, ghostCoords, direction, out motion, out targetTile))
                         {
                             direction = Direction.Down;
+
+                            // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                            direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                             if (!PacManSX.CanGhostMove(this.tileMap, ghostCoords, direction, out motion, out targetTile))
                             {
@@ -1274,10 +1318,12 @@ namespace PacManLib
                             }
                         }
                     }
-
                     else
                     {
                         direction = Direction.Down;
+
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                         if (player.GodMode)
                             direction = reverseMovement(direction);
@@ -1307,6 +1353,9 @@ namespace PacManLib
                     {
                         direction = Direction.Left;
 
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
+
                         if (player.GodMode)
                             direction = reverseMovement(direction);
 
@@ -1331,6 +1380,9 @@ namespace PacManLib
                     else
                     {
                         direction = Direction.Down;
+
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                         if (player.GodMode)
                             direction = reverseMovement(direction);
@@ -1360,6 +1412,9 @@ namespace PacManLib
                     {
                         direction = Direction.Left;
 
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
+
                         if (player.GodMode)
                             direction = reverseMovement(direction);
 
@@ -1385,12 +1440,18 @@ namespace PacManLib
                     {
                         direction = Direction.Up;
 
+                        // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                        direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
+
                         if (player.GodMode)
                             direction = reverseMovement(direction);
 
                         if (!PacManSX.CanGhostMove(this.tileMap, ghostCoords, direction, out motion, out targetTile))
                         {
                             direction = Direction.Left;
+
+                            // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
+                            direction = (randomNumber % 1 == 0) ? direction : reverseMovement(direction);
 
                             if (!PacManSX.CanGhostMove(this.tileMap, ghostCoords, direction, out motion, out targetTile))
                             {
@@ -1409,12 +1470,6 @@ namespace PacManLib
             }
 
             #endregion
-
-
-            int randomNumber = rand.Next(1, 5);
-
-            // He has a 1 in 5 chance of actually getting the direction right. Orange wasn't brightest ghost of the lot, but he tried so very hard!
-            direction = (randomNumber % 5 == 0) ? direction : reverseMovement(direction);
 
             return direction;
         }
@@ -1445,13 +1500,13 @@ namespace PacManLib
 
                 // based on direction tries to estimate in front of the player by one tile to try and get slightly more accurate and predicting
                 if (player.Direction == Direction.Right)
-                    predictedCoords.X = playerCoords.X + 1;
+                    predictedCoords.X = playerCoords.X + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Left)
-                    predictedCoords.X = playerCoords.X - 1;
+                    predictedCoords.X = playerCoords.X - PacManSX.PathTarget;
                 else if (player.Direction == Direction.Up)
-                    predictedCoords.Y = playerCoords.Y + 1;
+                    predictedCoords.Y = playerCoords.Y + PacManSX.PathTarget;
                 else if (player.Direction == Direction.Down)
-                    predictedCoords.Y = playerCoords.Y - 1;
+                    predictedCoords.Y = playerCoords.Y - PacManSX.PathTarget;
 
                 int whichPathFinding = rand.Next(0,1);
 
@@ -1739,40 +1794,29 @@ namespace PacManLib
 
             if (keyboardState.IsKeyDown(Keys.Space))
                 Fire();
+            else if (keyboardState.IsKeyDown(Keys.LeftControl))
+                TwoFingerFire();
+
 #elif WINDOWS_PHONE
             // If we're using Windows Phone use the Tap gesture to fire and the accelerometer to move.
 
-            int touchCount = TouchPanel.GetState().Count;
             // If Gesture is available.
-            while (TouchPanel.IsGestureAvailable)
+            if (TouchPanel.IsGestureAvailable)
             {
-                // If we've more than one touch location.
-                if (touchCount > 1)
-                {
-                    // Check for two finger tap.
-                    GestureSample firstGesture = TouchPanel.ReadGesture();
-                    GestureSample secondGesture = TouchPanel.ReadGesture();
+                GestureSample gesture = TouchPanel.ReadGesture();
 
-                    if (firstGesture.GestureType == GestureType.Tap && secondGesture.GestureType == GestureType.Tap)
-                        TwoFingerFire();
-                }
-                else if (touchCount == 1)
-                {
-                    // Read it.
-                    GestureSample gesture = TouchPanel.ReadGesture();
-
-                    // If it's a Tap gesture then fire a bullet.
-                    if (gesture.GestureType == GestureType.Tap)
+                if (gesture.GestureType == GestureType.DoubleTap)
+                    if (gesture.Position.X > this.GameManager.ScreenWidth / 2)
                         Fire();
-                }
+                    else
+                        TwoFingerFire();
             }
 
             // If the accelerometer is active.
             if (this.accelActive)
             {
-                // Get the accelerometer values.
-                float x = this.accelReading.X;
-                float y = this.accelReading.Y;
+                float x = this.accelCurrentValue.X;
+                float y = this.accelCurrentValue.Y;
 
                 // Check if it's the first time we're here.
                 if (!this.accelInitialized)
@@ -1788,31 +1832,23 @@ namespace PacManLib
                     float deltaX = lastX - x;
                     float deltaY = lastY - y;
 
-                    // Filter out small movements.
-                    if (deltaX > -PacManSX.AccelerometerNoise && deltaX < PacManSX.AccelerometerNoise)
-                        deltaX = 0;
-
-                    if (deltaY > -PacManSX.AccelerometerNoise && deltaY < PacManSX.AccelerometerNoise)
-                        deltaY = 0;
-
                     // Set the lastX and lastY to the current X and Y.
                     lastX = x;
                     lastY = y;
 
                     if (Math.Abs(deltaX) > Math.Abs(deltaY))
                     {
-                        // If ABS(deltaX) is larget then ABS(deltaY) then we're going either up or down.
-                        if (deltaX < 0)
-                            direction = Direction.Up;
-                        else if (deltaX > 0)
+                        if (x > this.accelCalibration.X + PacManSX.AccelerometerDifference)
                             direction = Direction.Down;
+                        else if (x < this.accelCalibration.X - PacManSX.AccelerometerDifference)
+                            direction = Direction.Up;
                     }
                     else
                     {
                         // Otherwise we're going Right or left.
-                        if (deltaY < 0)
+                        if (y > this.accelCalibration.Y + PacManSX.AccelerometerDifference)
                             direction = Direction.Right;
-                        else if (deltaY > 0)
+                        else if (y < this.accelCalibration.Y - PacManSX.AccelerometerDifference)
                             direction = Direction.Left;
                     }
                 }
@@ -1926,7 +1962,7 @@ namespace PacManLib
         private void Fire()
         {
             // Only one bullet can be alive and you need atleast BulletCost in score..
-            if (!this.bulletAlive && this.score >= PacManSX.BulletCost)
+            if (!this.bulletAlive && this.score >= PacManSX.StartBulletCost)
             {
                 this.bulletMotion = this.player.Motion;
 
@@ -1942,7 +1978,8 @@ namespace PacManLib
 
                 this.bulletAlive = true;
                 this.ironBullet = false;
-                this.score -= PacManSX.BulletCost;
+                this.bulletsFired++;
+                this.score -= this.bulletsFired * PacManSX.StartBulletCost;
             }
         }
 
@@ -2202,19 +2239,6 @@ namespace PacManLib
         public static Vector2 ConvertCellToPosition(Point cell)
         {
             return new Vector2(cell.X * PacManSX.TileWidth, cell.Y * PacManSX.TileHeight + PacManSX.TileHeight);
-        }
-
-        /// <summary>
-        /// Creates a rectangle around a specific tile cell.
-        /// </summary>
-        /// <param name="tileCoordinates">The tile cell.</param>
-        /// <returns>The rectangle around the given tile cell point.</returns>
-        public static Rectangle CreateRectForTile(Point tileCoordinates)
-        {
-            return new Rectangle(
-                tileCoordinates.X * TileWidth, 
-                tileCoordinates.Y * TileHeight,
-                TileWidth, TileHeight);
         }
 
         #endregion

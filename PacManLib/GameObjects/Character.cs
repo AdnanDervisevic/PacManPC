@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PacManLib.GameObjects
 {
-    public class Character
+    public abstract class Character
     {
         #region Fields
 
@@ -51,6 +51,11 @@ namespace PacManLib.GameObjects
         public Direction Direction { get; set; }
 
         /// <summary>
+        /// Gets or sets the start direction the character is facing.
+        /// </summary>
+        public Direction StartDirection { get; set; }
+
+        /// <summary>
         /// Gets the center of the character.
         /// </summary>
         public Vector2 Center
@@ -84,11 +89,13 @@ namespace PacManLib.GameObjects
         /// <param name="texture">The character spritesheet.</param>
         /// <param name="frameWidth">The width of a single frame.</param>
         /// <param name="frameHeight">The height of a single frame.</param>
-        public Character(GameManager gameManager, Vector2 position, Texture2D texture, Texture2D godmodeTexture, int frameWidth, int frameHeight)
+        public Character(GameManager gameManager, Vector2 position, Direction startDirection, Texture2D texture, Texture2D godmodeTexture, int frameWidth, int frameHeight)
         {
             this.Alive = true;
             this.gameManager = gameManager;
             this.Position = position;
+            this.Direction = startDirection;
+            this.StartDirection = startDirection;
             this.origin = new Vector2(frameWidth / 2, frameHeight / 2);
             this.godmodeAnimation = new SpriteAnimation(godmodeTexture, frameWidth, frameHeight);
             this.animation = new SpriteAnimation(texture, frameWidth, frameHeight);
@@ -102,7 +109,7 @@ namespace PacManLib.GameObjects
         /// Allows the game to update itself.
         /// </summary>
         /// <param name="elapsedGameTime">Elapsed time since the last update.</param>
-        public void Update(TimeSpan elapsedGameTime)
+        public virtual void Update(TimeSpan elapsedGameTime)
         {
             if (this.Alive)
             {
