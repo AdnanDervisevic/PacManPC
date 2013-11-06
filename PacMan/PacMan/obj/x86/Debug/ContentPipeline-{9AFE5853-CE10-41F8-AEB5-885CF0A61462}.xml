@@ -17,16 +17,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Life.xnb</Output>
-      <Time>2013-10-28T15:30:17.1421948+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Font.spritefont</Source>
-      <Name>Font</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Font.xnb</Output>
-      <Time>2013-10-28T15:23:38.8829281+01:00</Time>
+      <Time>2013-10-28T15:30:17+01:00</Time>
     </Item>
     <Item>
       <Source>BlackTexture.png</Source>
@@ -44,7 +35,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Bullet.xnb</Output>
-      <Time>2013-10-28T18:09:15+01:00</Time>
+      <Time>2013-11-04T16:56:18+01:00</Time>
     </Item>
     <Item>
       <Source>Ghosts\BlueGhost.png</Source>
@@ -53,16 +44,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\BlueGhost.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Ghosts\BlueGhostGodMode.png</Source>
-      <Name>Ghosts\BlueGhostGodMode</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\BlueGhostGodMode.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Time>2013-11-05T21:31:08+01:00</Time>
     </Item>
     <Item>
       <Source>Ghosts\GreenGhost.png</Source>
@@ -71,7 +53,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\GreenGhost.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Time>2013-11-05T21:30:07+01:00</Time>
     </Item>
     <Item>
       <Source>Ghosts\PurpleGhost.png</Source>
@@ -80,7 +62,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\PurpleGhost.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Time>2013-11-04T16:44:59+01:00</Time>
     </Item>
     <Item>
       <Source>Ghosts\YellowGhost.png</Source>
@@ -89,34 +71,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\YellowGhost.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Ghosts\GreenGhostGodMode.png</Source>
-      <Name>Ghosts\GreenGhostGodMode</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\GreenGhostGodMode.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Ghosts\PurpleGhostGodMode.png</Source>
-      <Name>Ghosts\PurpleGhostGodMode</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\PurpleGhostGodMode.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
-    </Item>
-    <Item>
-      <Source>Ghosts\YellowGhostGodMode.png</Source>
-      <Name>Ghosts\YellowGhostGodMode</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\YellowGhostGodMode.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Time>2013-11-05T21:54:01+01:00</Time>
     </Item>
     <Item>
       <Source>Tiles\Door.png</Source>
@@ -143,7 +98,34 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Tiles\Tileset.xnb</Output>
-      <Time>2013-10-30T14:28:50.7705083+01:00</Time>
+      <Time>2013-11-04T16:43:29+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Ghosts\AmmoGhost.png</Source>
+      <Name>Ghosts\AmmoGhost</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\AmmoGhost.xnb</Output>
+      <Time>2013-11-05T21:57:52+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Ghosts\GodMode.png</Source>
+      <Name>Ghosts\GodMode</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Ghosts\GodMode.xnb</Output>
+      <Time>2013-11-05T21:33:46+01:00</Time>
+    </Item>
+    <Item>
+      <Source>Font.spritefont</Source>
+      <Name>Font</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Font.xnb</Output>
+      <Time>2013-10-28T15:23:38.8829281+01:00</Time>
     </Item>
     <Item>
       <Source>Sounds\chomp.wav</Source>
@@ -173,13 +155,13 @@
       <Time>2013-10-28T15:23:38.9029306+01:00</Time>
     </Item>
     <Item>
-      <Source>PacmanGodMode.png</Source>
-      <Name>PacmanGodMode</Name>
+      <Source>GhostBullet.png</Source>
+      <Name>GhostBullet</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\PacmanGodMode.xnb</Output>
-      <Time>2013-10-28T15:23:38+01:00</Time>
+      <Output>D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\GhostBullet.xnb</Output>
+      <Time>2013-11-06T21:57:15+01:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

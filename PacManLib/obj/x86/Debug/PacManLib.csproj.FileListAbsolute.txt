@@ -3,7 +3,6 @@ D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\bin\x86\Debug\PacManLib.pdb
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\obj\x86\Debug\PacManLib.dll
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\obj\x86\Debug\PacManLib.pdb
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\obj\x86\Debug\PacManLib.csprojResolveAssemblyReference.cache
 X:\Dropbox\Högskola\PacManPC\PacManLib\bin\x86\Debug\PacManLib.dll
 X:\Dropbox\Högskola\PacManPC\PacManLib\bin\x86\Debug\PacManLib.pdb
 X:\Dropbox\Högskola\PacManPC\PacManLib\obj\x86\Debug\Microsoft.Xna.Framework.RuntimeProfile.txt

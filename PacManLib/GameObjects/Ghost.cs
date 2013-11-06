@@ -21,6 +21,16 @@ namespace PacManLib.GameObjects
 
         private Vector2 SpawnPosition;
         private float respawnTimer = 0;
+        private bool startInJail = false;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets whether this ghost is in jail.
+        /// </summary>
+        public bool InJail { get; set; }
 
         #endregion
 
@@ -31,7 +41,7 @@ namespace PacManLib.GameObjects
         /// </summary>
         /// <param name="ghost">The ghost.</param>
         /// <returns>Returns the direction the ghost should move in.</returns>
-        public delegate Direction GhostAIEventHandler(Ghost ghost, Tile ghostTile, Point ghostCoords, Point playerCoords, out Vector2 motion);
+        public delegate Direction GhostAIEventHandler(Ghost ghost, Tile ghostTile, Point ghostCoords, Point playerCoords, out Vector2 motion, out Tile targetTile);
     
         /// <summary>
         /// The GhostAI event, this event is fired when the ghosts AI should calculate a direction.
@@ -50,10 +60,12 @@ namespace PacManLib.GameObjects
         /// <param name="texture">The players spritesheet.</param>
         /// <param name="frameWidth">The width of a single frame.</param>
         /// <param name="frameHeight">The height of a single frame.</param>
-        public Ghost(GameManager gameManager, Vector2 position, Direction startDirection, Texture2D texture, Texture2D godModeTexture, int frameWidth, int frameHeight)
+        public Ghost(GameManager gameManager, Vector2 position, Direction startDirection, bool startInJail, Texture2D texture, Texture2D godModeTexture, int frameWidth, int frameHeight)
             : base(gameManager, position, startDirection, texture, godModeTexture, frameWidth, frameHeight)
         {
             this.SpawnPosition = position;
+            this.startInJail = startInJail;
+            this.InJail = startInJail;
             this.Speed = 120;
         }
 
@@ -77,6 +89,7 @@ namespace PacManLib.GameObjects
                     this.Alive = true;
                     this.Position = this.SpawnPosition;
                     this.respawnTimer = 0;
+                    this.InJail = this.startInJail;
                 }
             }
 
@@ -91,6 +104,17 @@ namespace PacManLib.GameObjects
         {
             if (!this.Alive)
                 return;
+
+            // If the ghost goes outside the playfield, teleport the ghost to the other side.
+            if (this.Position.X >= 772)
+                this.Position.X = 0;
+            else if (this.Position.X <= 0)
+                this.Position.X = 772;
+
+            if (this.Position.Y >= 452)
+                this.Position.Y = PacManSX.TitleHeight;
+            else if (this.Position.Y <= 0 + PacManSX.TitleHeight)
+                this.Position.Y = 452;
 
             // Player coordinates for targeting
             Point playerCoords = PacManSX.ConvertPositionToCell(player.Center);
@@ -107,7 +131,7 @@ namespace PacManLib.GameObjects
             // Check if the tile is a turn or path tile.
             if (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.Path
                 || ghostTile.TileContent >= TileContent.Ring && ghostTile.TileContent <= TileContent.DotTurn
-                || ghostTile.TileContent == TileContent.Door)
+                || (ghostTile.TileContent == TileContent.Door && this.InJail))
             {
                 // Convert the cell to a position.
 
@@ -117,20 +141,18 @@ namespace PacManLib.GameObjects
                 if (ghostTilePosition == this.Position)
                 {
                     // Run the ghost AI.
-                    if (this.GhostAI != null)
-                    {
-                        direction = this.GhostAI(this, ghostTile, ghostCoords, playerCoords, out motion);
-                    }
+                    if (this.GhostAI != null && (ghostTile.TileContent == TileContent.Turn || ghostTile.TileContent == TileContent.RingTurn || ghostTile.TileContent == TileContent.DotTurn))
+                        direction = this.GhostAI(this, ghostTile, ghostCoords, playerCoords, out motion, out targetTile);
 
-                    if (PacManSX.CanGhostMove(tileMap, ghostCoords, direction, out motion, out targetTile))
+                    if (PacManSX.CanGhostMove(tileMap, ghostCoords, direction, (targetTile != null && targetTile.TileContent == TileContent.Door && !this.InJail), out motion, out targetTile))
                     {
                         this.Motion = motion;
                         this.Direction = direction;
                     }
-                    else
+                    else if (!this.InJail)
                     {
                         // If the ghost can't move in that direction then check if the player can move in the old direction.
-                        if (PacManSX.CanGhostMove(tileMap, ghostCoords, this.Direction, out motion, out targetTile))
+                        if (PacManSX.CanGhostMove(tileMap, ghostCoords, this.Direction, this.InJail, out motion, out targetTile))
                         {
                             this.Motion = motion;
                         }
