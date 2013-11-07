@@ -29,7 +29,7 @@ namespace PacManLib
     {
         #region Consts
 #if WINDOWS_PHONE
-        public const float AccelerometerDifference = 0.17f;
+        public const float AccelerometerDifference = 0.10f;
 #endif
 
         public const int TitleHeight = 20;
@@ -58,6 +58,9 @@ namespace PacManLib
         public const int FruitMinSpawnTimerInSeconds = 0;
         public const int FruitMaxSpawnTimerInSeconds = 30;
         public const int GodModeActiveInSeconds = 10;
+
+        public const float BackgroundSoundVolume = 0.3f;
+        public const float GodModeSoundVolume = 0.5f;
 
         #endregion
 
@@ -178,11 +181,11 @@ namespace PacManLib
 
             chompInstance = soundChomp.CreateInstance();
             godmodeInstance = soundGodMode.CreateInstance();
-            godmodeInstance.Volume = 0.5f;
+            godmodeInstance.Volume = PacManSX.GodModeSoundVolume;
             godmodeInstance.IsLooped = true;
 
             backgroundSoundInstance = backgroundSound.CreateInstance();
-            backgroundSoundInstance.Volume = 0.1f;
+            backgroundSoundInstance.Volume = PacManSX.BackgroundSoundVolume;
             backgroundSoundInstance.IsLooped = true;
             backgroundSoundInstance.Play();
 
@@ -558,6 +561,22 @@ namespace PacManLib
                 this.GameManager.SpriteBatch.End();
             }
         }
+
+#if WINDOWS_PHONE
+
+        /// <summary>
+        /// Method fired when we're navigating from the game page.
+        /// </summary>
+        public void StopSounds()
+        {
+            if (this.backgroundSoundInstance.State == SoundState.Playing)
+                this.backgroundSoundInstance.Stop();
+
+            if (this.godmodeInstance.State == SoundState.Playing)
+                this.godmodeInstance.Stop();
+        }
+
+#endif
 
         #endregion
 
@@ -2007,18 +2026,39 @@ namespace PacManLib
 
                     if (Math.Abs(deltaX) > Math.Abs(deltaY))
                     {
-                        if (x > this.accelCalibration.X + PacManSX.AccelerometerDifference)
-                            direction = Direction.Down;
-                        else if (x < this.accelCalibration.X - PacManSX.AccelerometerDifference)
-                            direction = Direction.Up;
+                        if (this.GameManager.Orientation == DisplayOrientation.LandscapeLeft)
+                        {
+                            if (x > this.accelCalibration.X + PacManSX.AccelerometerDifference)
+                                direction = Direction.Up;
+                            else if (x < this.accelCalibration.X - PacManSX.AccelerometerDifference)
+                                direction = Direction.Down;
+                        }
+                        else
+                        {
+                            if (x > this.accelCalibration.X + PacManSX.AccelerometerDifference)
+                                direction = Direction.Down;
+                            else if (x < this.accelCalibration.X - PacManSX.AccelerometerDifference)
+                                direction = Direction.Up;
+                        }
                     }
                     else
                     {
-                        // Otherwise we're going Right or left.
-                        if (y > this.accelCalibration.Y + PacManSX.AccelerometerDifference)
-                            direction = Direction.Right;
-                        else if (y < this.accelCalibration.Y - PacManSX.AccelerometerDifference)
-                            direction = Direction.Left;
+                        if (this.GameManager.Orientation == DisplayOrientation.LandscapeLeft)
+                        {
+                            // Otherwise we're going Right or left.
+                            if (y > this.accelCalibration.Y + PacManSX.AccelerometerDifference)
+                                direction = Direction.Left;
+                            else if (y < this.accelCalibration.Y - PacManSX.AccelerometerDifference)
+                                direction = Direction.Right;
+                        }
+                        else
+                        {
+                            // Otherwise we're going Right or left.
+                            if (y > this.accelCalibration.Y + PacManSX.AccelerometerDifference)
+                                direction = Direction.Right;
+                            else if (y < this.accelCalibration.Y - PacManSX.AccelerometerDifference)
+                                direction = Direction.Left;
+                        }
                     }
                 }
             }
