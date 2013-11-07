@@ -16,11 +16,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PacMan")]
-[assembly: AssemblyProduct("PacMan")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyTitle("Pac-Man Shooter eXtreme")]
+[assembly: AssemblyProduct("PacManSX")]
+[assembly: AssemblyDescription("Tobias Oskarsson & Adnan Dervisevic")]
+[assembly: AssemblyCompany("Veritas")]
+[assembly: AssemblyCopyright("Copyright Veritas ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

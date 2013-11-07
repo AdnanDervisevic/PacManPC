@@ -9,4 +9,3 @@ X:\Dropbox\Högskola\PacManPC\PacManLib\obj\x86\Debug\Microsoft.Xna.Framework.Ru
 X:\Dropbox\Högskola\PacManPC\PacManLib\obj\x86\Debug\PacManLib.dll
 X:\Dropbox\Högskola\PacManPC\PacManLib\obj\x86\Debug\PacManLib.pdb
 X:\Dropbox\Högskola\PacManPC\PacManLib\obj\x86\Debug\PacManLib.csprojResolveAssemblyReference.cache
-D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacManLib\obj\x86\Debug\PacManLib.csprojResolveAssemblyReference.cache
