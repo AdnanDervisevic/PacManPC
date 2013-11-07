@@ -49,3 +49,4 @@ D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.exe.
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\PacMan.application
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.exe.manifest
 D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\obj\x86\Debug\PacMan.application
+D:\Dropbox\HV\Årskurs 3\PUM400\PacManPC\PacMan\PacMan\bin\x86\Debug\Content\Sounds\background.xnb
